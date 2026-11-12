@@ -643,6 +643,7 @@ async function doAuth(){
  var r=su?await SB.auth.signUp({email:email,password:pass,options:{data:{name:name},emailRedirectTo:location.origin+location.pathname}}):await SB.auth.signInWithPassword({email:email,password:pass});
  UI.busy=false;
  if(r.error){UI.authMsgOk=false;UI.authMsg=/Invalid login/i.test(r.error.message)?'البريد أو كلمة المرور غير صحيحة':(/registered/i.test(r.error.message)?'هذا البريد مسجّل بالفعل. سجّل الدخول.':r.error.message);render();return}
+ if(su&&r.data.user&&r.data.user.identities&&r.data.user.identities.length===0){UI.authMsgOk=false;UI.authMsg='هذا البريد مسجّل من قبل. سجّل الدخول بكلمة المرور الحالية لهذا البريد.';UI.authMode='login';render();return}
  if(su&&!r.data.session){UI.authMsgOk=true;UI.authMsg='أرسلنا رابط تأكيد إلى بريدك. افتحه ثم عُد وسجّل الدخول.';UI.authMode='login';render();return}
  AUTH.user=r.data.user;UI.screen='loading';render();await loadAll();
 }
