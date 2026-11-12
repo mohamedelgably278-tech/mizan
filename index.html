@@ -8,9 +8,11 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--ink:#111614;--muted:#4A5752;--bg:#EEF1EF;--card:#FFFFFF;--line:#DDE3E0;--soft:#F4F6F5;--green:#0B5A43;--mint:#5FD3A4;--dark:#0E1A16;--warn:#B4410E;--warnbg:#FCEDE6;--okbg:#E3F4EC;--amber:#D08A12;--amberbg:#FDF3DD}
+:root{--ring:0 0 0 3px rgba(11,90,67,.18);--shadow:0 1px 2px rgba(16,24,20,.04),0 4px 16px rgba(16,24,20,.05);--ink:#111614;--muted:#4A5752;--bg:#EEF1EF;--card:#FFFFFF;--line:#DDE3E0;--soft:#F4F6F5;--green:#0B5A43;--mint:#5FD3A4;--dark:#0E1A16;--warn:#B4410E;--warnbg:#FCEDE6;--okbg:#E3F4EC;--amber:#D08A12;--amberbg:#FDF3DD}
 *{box-sizing:border-box}
-body{margin:0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px}
+body{margin:0;font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;-webkit-font-smoothing:antialiased}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green)!important;box-shadow:var(--ring)}
+button:focus-visible,a:focus-visible{outline:none;box-shadow:var(--ring)}
 button,input,select,textarea{font-family:inherit;font-size:15px}
 button{cursor:pointer}
 a{color:var(--green)}
@@ -22,7 +24,7 @@ nav.tabs button{background:transparent;color:#C9D3CF;border:0;padding:9px 14px;b
 nav.tabs button.on{background:var(--mint);color:var(--dark);font-weight:600}
 nav.tabs .badge{display:inline-block;min-width:20px;padding:0 6px;border-radius:999px;background:var(--warn);color:#fff;font-size:12px;margin-inline-start:6px}
 main{max-width:1360px;margin:0 auto;padding:20px}
-.card{background:var(--card);border-radius:16px;padding:18px}
+.card{background:var(--card);border-radius:16px;padding:20px;border:1px solid #E3E8E5;box-shadow:var(--shadow)}
 .grid{display:grid;gap:14px}
 .kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
 .kpi span{color:var(--muted);font-size:13px}
@@ -33,7 +35,9 @@ h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:0 0 12px}
 .row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-start}
 .col{flex:1 1 320px;min-width:0}
 .col2{flex:2 1 520px;min-width:0}
-.btn{min-height:44px;padding:0 16px;border-radius:10px;border:0;background:var(--green);color:#fff;font-weight:600}
+.btn{min-height:44px;padding:0 18px;border-radius:10px;border:0;background:var(--green);color:#fff;font-weight:600;transition:background .15s,transform .05s}
+.btn:hover{background:#094A37}.btn:active{transform:translateY(1px)}
+.btn.ghost:hover{background:var(--soft)}
 .btn.ghost{background:#fff;color:var(--ink);border:1px solid #C7D0CC}
 .btn.dark{background:var(--dark)}
 .btn.warn{background:var(--warn)}
@@ -62,7 +66,7 @@ td{padding:9px 8px;border-bottom:1px solid #EEF1EF;vertical-align:middle}
 label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);flex:1 1 160px}
 label.f input,label.f select,label.f textarea{min-height:42px;border:1px solid #C7D0CC;border-radius:10px;padding:8px 10px;color:var(--ink);background:#fff}
 .form{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
-.form[style*="column"] label.f{flex:none}
+
 .tickets{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
 .ticket{background:#1C2622;color:#F2F5F3;border-radius:14px;overflow:hidden;border-top:6px solid var(--mint)}
 .ticket.late{border-top-color:#F2836B}
@@ -80,6 +84,29 @@ label.f input,label.f select,label.f textarea{min-height:42px;border:1px solid #
 .bar{height:8px;background:#EEF1EF;border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;background:var(--green);border-radius:999px}
 .onb{max-width:720px;margin:40px auto}
 .steps{display:flex;gap:6px;margin-bottom:16px}.steps i{flex:1;height:6px;border-radius:999px;background:#D5DCD9}.steps i.on{background:var(--green)}
+.auth{min-height:100vh;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);background:#fff}
+.auth-side{background:radial-gradient(1200px 600px at 100% 0%,#13372B 0%,#0E1A16 55%);color:#F2F5F3;padding:56px 56px 40px;display:flex;flex-direction:column;justify-content:space-between;gap:32px}
+.auth-side h2{font-size:34px;line-height:1.35;margin:0 0 14px;font-weight:700;letter-spacing:0}
+.auth-side p{color:#B9C6C1;line-height:1.9;margin:0;font-size:16px;max-width:460px}
+.auth-points{display:flex;flex-direction:column;gap:14px;margin-top:28px}
+.auth-points div{display:flex;gap:12px;align-items:flex-start;color:#DCE5E1;font-size:15px;line-height:1.7}
+.auth-points i{flex:none;width:26px;height:26px;border-radius:8px;background:rgba(95,211,164,.14);display:flex;align-items:center;justify-content:center;color:#5FD3A4;font-style:normal;font-size:14px;font-weight:700}
+.auth-main{display:flex;align-items:center;justify-content:center;padding:40px 24px}
+.auth-box{width:100%;max-width:400px}
+.auth-box h1{font-size:28px;margin:0 0 6px}
+.auth-box .sub{color:var(--muted);margin:0 0 28px;line-height:1.7}
+.stack{display:flex;flex-direction:column;gap:16px}
+.field{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:500;color:#2E3B36}
+.field input,.field textarea{min-height:48px;border:1px solid #CDD5D1;border-radius:12px;padding:10px 14px;font-size:15px;color:var(--ink);background:#fff;transition:border-color .15s,box-shadow .15s}
+.field textarea{min-height:110px;resize:vertical;line-height:1.7}
+.btn.lg{min-height:50px;font-size:16px;border-radius:12px;width:100%}
+.switch{margin-top:22px;text-align:center;color:var(--muted);font-size:14px}
+.switch button{background:none;border:0;color:var(--green);font-weight:600;padding:4px;font-size:14px}
+.divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:13px;margin:6px 0}.divider:before,.divider:after{content:"";flex:1;height:1px;background:var(--line)}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.6;color:#2E3B36;padding:12px 14px;border:1px solid var(--line);border-radius:12px;cursor:pointer}
+.check input{margin-top:4px;accent-color:var(--green);width:16px;height:16px}
+.foot{color:#7F8C87;font-size:12px}
+@media (max-width:860px){.auth{grid-template-columns:1fr}.auth-side{padding:28px 24px;gap:12px}.auth-side h2{font-size:24px}.auth-points,.auth-side .foot{display:none}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 @media (max-width:700px){main{padding:12px}.kpi b{font-size:22px}}
 </style>
@@ -307,7 +334,7 @@ var ROLES={owner:{n:'المالك',tabs:['hq','acct','owner','pos','kds','buy','
 var TABN={hq:'مركز القيادة',acct:'الحسابات',owner:'لوحة الفرع',pos:'البيع',kds:'المطبخ',buy:'المشتريات',inv:'المخزون',shift:'الوردية والنقدية',set:'الإعدادات'};
 function render(){
  var app=document.getElementById('app');
- if(UI.screen==='loading'){app.innerHTML='<div class="onb card"><h1>ميزان</h1><p class="muted">جارٍ التحميل…</p></div>';return}
+ if(UI.screen==='loading'){app.innerHTML='<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:#4A5752">'+logo('#0B5A43')+'<span>جارٍ تحميل مطعمك…</span></div>';return}
  if(UI.screen==='auth'){app.innerHTML=authScreen();return}
  if(UI.screen==='setup'){app.innerHTML=setupScreen();return}
  if(!S){app.innerHTML='';return}
@@ -328,26 +355,35 @@ function render(){
 function view(){switch(UI.tab){case 'hq':return hq();case 'acct':return acct();case 'pos':return pos();case 'kds':return kds();case 'buy':return buy();case 'inv':return inv();case 'shift':return shift();case 'owner':return owner();case 'set':return settings()}return ''}
 
 /* ---------- Auth & setup ---------- */
-function brandBlock(){return '<div class="brand" style="color:#0E1A16;margin-bottom:10px"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0B5A43" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><path d="M5 21h14"/><path d="M4 7h16"/><path d="M4 7l-3 7a4 4 0 0 0 6 0z"/><path d="M20 7l-3 7a4 4 0 0 0 6 0z"/></svg>ميزان</div>'}
+function logo(c){return '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="'+c+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><path d="M5 21h14"/><path d="M4 7h16"/><path d="M4 7l-3 7a4 4 0 0 0 6 0z"/><path d="M20 7l-3 7a4 4 0 0 0 6 0z"/></svg>'}
+function authSide(){
+ return '<aside class="auth-side"><div><div class="brand" style="font-size:22px">'+logo('#5FD3A4')+'ميزان</div></div>'+
+ '<div><h2>مطعمك كله في شاشة واحدة.<br>من الكاشير إلى الأرباح.</h2><p>نظام تشغيل للمطاعم يبيع ويشتري ويحسب، ويخبرك بما يحتاج قرارك قبل أن يضيع المال.</p>'+
+ '<div class="auth-points"><div><i>✓</i><span>البيع وشاشة المطبخ وطلبات التطبيقات في مكان واحد</span></div><div><i>✓</i><span>المخزون يُخصم تلقائيًا من الوصفة مع كل بيعة</span></div><div><i>✓</i><span>كل الفروع والحسابات أمامك من هاتفك لحظة بلحظة</span></div></div></div>'+
+ '<div class="foot">© ميزان · نظام تشغيل المطاعم</div></aside>';
+}
 function authScreen(){
  var su=UI.authMode==='signup';
- return '<div class="onb card">'+brandBlock()+'<h1>'+(su?'إنشاء حساب':'تسجيل الدخول')+'</h1><p class="muted" style="line-height:1.8">'+(su?'حساب واحد لكل شخص: المالك أو المدير أو الكاشير. بعد التسجيل تنشئ مطعمك أو تنضم إليه بكود دعوة.':'ادخل بحسابك لتصل إلى مطعمك من أي جهاز.')+'</p>'+
- '<form data-act="auth" class="form" style="flex-direction:column;align-items:stretch">'+(su?'<label class="f">الاسم<input id="a-name" autocomplete="name" required></label>':'')+
- '<label class="f">البريد الإلكتروني<input id="a-email" type="email" autocomplete="email" required dir="ltr"></label><label class="f">كلمة المرور<input id="a-pass" type="password" autocomplete="'+(su?'new-password':'current-password')+'" minlength="6" required dir="ltr"></label>'+
- '<button class="btn" type="submit" '+(UI.busy?'disabled':'')+'>'+(UI.busy?'لحظة…':(su?'إنشاء الحساب':'دخول'))+'</button></form>'+
- (UI.authMsg?'<div class="alert '+(UI.authMsgOk?'ok':'bad')+'" style="margin-top:12px">'+esc(UI.authMsg)+'</div>':'')+
- '<p style="margin-top:14px">'+(su?'لديك حساب؟ ':'ليس لديك حساب؟ ')+'<button class="btn ghost sm" data-act="auth-mode">'+(su?'تسجيل الدخول':'إنشاء حساب')+'</button></p></div>';
+ return '<div class="auth">'+authSide()+'<main class="auth-main"><div class="auth-box"><h1>'+(su?'أنشئ حسابك':'مرحبًا بعودتك')+'</h1><p class="sub">'+(su?'حساب واحد لكل شخص في فريقك. بعد التسجيل تنشئ مطعمك أو تنضم إليه بكود دعوة.':'سجّل الدخول لتصل إلى مطعمك من أي جهاز.')+'</p>'+
+ '<form data-act="auth" class="stack" novalidate>'+(su?'<label class="field">الاسم الكامل<input id="a-name" autocomplete="name" placeholder="مثال: محمد أحمد" required></label>':'')+
+ '<label class="field">البريد الإلكتروني<input id="a-email" type="email" autocomplete="email" placeholder="name@example.com" required dir="ltr"></label>'+
+ '<label class="field">كلمة المرور<input id="a-pass" type="password" autocomplete="'+(su?'new-password':'current-password')+'" placeholder="'+(su?'6 أحرف على الأقل':'••••••••')+'" minlength="6" required dir="ltr"></label>'+
+ (UI.authMsg?'<div class="alert '+(UI.authMsgOk?'ok':'bad')+'" style="margin:0">'+esc(UI.authMsg)+'</div>':'')+
+ '<button class="btn lg" type="submit" '+(UI.busy?'disabled':'')+'>'+(UI.busy?'لحظة…':(su?'إنشاء الحساب':'تسجيل الدخول'))+'</button></form>'+
+ '<div class="switch">'+(su?'لديك حساب بالفعل؟':'ليس لديك حساب؟')+' <button data-act="auth-mode">'+(su?'سجّل الدخول':'أنشئ حسابًا مجانًا')+'</button></div></div></main></div>';
 }
 function setupScreen(){
- return '<div class="onb">'+brandBlock()+'<div class="grid"><section class="card"><h1>أنشئ مطعمك</h1><p class="muted" style="line-height:1.8">تصبح أنت المالك، ثم تدعو المديرين والكاشير بأكواد دعوة.</p>'+
- '<div class="form" style="flex-direction:column;align-items:stretch"><label class="f">اسم المطعم<input id="o-name" placeholder="مثال: مطعم البيت"></label>'+
- '<label class="f">المنيو (اختياري): صنف وسعر في كل سطر<textarea id="o-menu" rows="5" placeholder="شاورما دجاج - 120\nبطاطس كبيرة - 50"></textarea></label>'+
- '<label class="f">النقدية في الدرج الآن<input id="o-cash" inputmode="decimal" value="2000"></label>'+
- '<label style="display:flex;gap:8px;align-items:center;font-size:14px"><input type="checkbox" id="o-demo"> ابدأ ببيانات تجريبية لثلاثة فروع (للتجربة والعرض)</label>'+
- '<button class="btn" data-act="create-org" '+(UI.busy?'disabled':'')+'>'+(UI.busy?'جارٍ التجهيز…':'إنشاء المطعم')+'</button></div></section>'+
- '<section class="card"><h2>أو انضم إلى مطعم قائم</h2><p class="muted">اطلب كود الدعوة من المالك.</p><div class="form"><label class="f">كود الدعوة<input id="j-code" dir="ltr" style="text-transform:uppercase"></label><button class="btn ghost" data-act="join" '+(UI.busy?'disabled':'')+'>انضمام</button></div></section>'+
- (UI.authMsg?'<div class="alert bad">'+esc(UI.authMsg)+'</div>':'')+
- '<button class="btn ghost sm" data-act="logout">تسجيل الخروج</button></div></div>';
+ return '<div class="auth">'+authSide()+'<main class="auth-main"><div class="auth-box" style="max-width:440px"><h1>جهّز مطعمك</h1><p class="sub">دقيقة واحدة وتبدأ البيع. ستكون أنت المالك، وتدعو فريقك لاحقًا.</p>'+
+ '<div class="stack"><label class="field">اسم المطعم<input id="o-name" placeholder="مثال: مطعم البيت"></label>'+
+ '<label class="field">المنيو <span class="muted" style="font-weight:400">(اختياري · صنف وسعر في كل سطر)</span><textarea id="o-menu" placeholder="شاورما دجاج - 120\nبطاطس كبيرة - 50"></textarea></label>'+
+ '<label class="field">النقدية في الدرج الآن (ج.م)<input id="o-cash" inputmode="decimal" value="2000" dir="ltr"></label>'+
+ '<label class="check"><input type="checkbox" id="o-demo"><span><b>أضف بيانات تجريبية</b><br><span class="muted">ثلاثة فروع بمبيعات ومخزون وحسابات، لتجربة النظام أو عرضه على عميل.</span></span></label>'+
+ (UI.authMsg?'<div class="alert bad" style="margin:0">'+esc(UI.authMsg)+'</div>':'')+
+ '<button class="btn lg" data-act="create-org" '+(UI.busy?'disabled':'')+'>'+(UI.busy?'جارٍ التجهيز…':'إنشاء المطعم')+'</button>'+
+ '<div class="divider">أو</div>'+
+ '<label class="field">انضم إلى مطعم قائم بكود دعوة<input id="j-code" dir="ltr" placeholder="ABC123" style="text-transform:uppercase;letter-spacing:2px"></label>'+
+ '<button class="btn ghost lg" data-act="join" '+(UI.busy?'disabled':'')+'>انضمام بالكود</button></div>'+
+ '<div class="switch"><button data-act="logout">تسجيل الخروج</button></div></div></main></div>';
 }
 
 /* ---------- POS ---------- */
