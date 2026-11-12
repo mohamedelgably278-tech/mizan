@@ -532,19 +532,19 @@ function caseBadge(c){if(!c)return'';var u=CASE_UI[c.status]||['muted',c.status]
 
 /* ---------- profitability (estimate) ---------- */
 function profit(){
- var ids=scopeIds();var P={pos:0,posCost:0,ext:0,extDisc:0,comm:0,extCost:0,exp:0,waste:0,orders:0};
+ var ids=scopeIds();var P={pos:0,posCost:0,posEst:0,ext:0,extDisc:0,comm:0,extCost:0,exp:0,waste:0,orders:0};
+ var costed=S.menu.filter(function(m){return m.recipe&&m.recipe.length&&m.price});
+ P.avgCostPct=costed.length?costed.reduce(function(a,m){return a+recipeCostAny(m)/m.price},0)/costed.length:0.32;
+ P.costBasis=costed.length?'متوسط تكلفة '+costed.length+' صنفًا لهم وصفة':'افتراض 32% لعدم وجود وصفات';
  S.branches.forEach(function(b){if(ids.indexOf(b.id)<0)return;
   withBranch(b,function(){
-   b.orders.forEach(function(o){if(o.voided||!inRange(o.t))return;P.pos+=o.total;P.orders++;o.lines.forEach(function(l){var m=item(l.mid);if(m)P.posCost+=recipeCost(m)*l.qty})});
+   b.orders.forEach(function(o){if(o.voided||!inRange(o.t))return;P.pos+=o.total;P.orders++;o.lines.forEach(function(l){var m=item(l.mid);if(m&&m.recipe&&m.recipe.length)P.posCost+=recipeCost(m)*l.qty;else P.posEst+=l.price*l.qty*P.avgCostPct})});
    b.expenses.forEach(function(e){if(inRange(e.t))P.exp+=e.amt});
    b.waste.forEach(function(w){if(!inRange(w.t))return;var g=ing(w.ing);if(g)P.waste+=g.cost*w.q});
   })});
  S.ext.orders.forEach(function(o){if(ids.indexOf(o.branch_id)<0||!inRange(Date.parse(o.order_at)))return;P.ext+=(+o.gross)-(+o.discount);P.extDisc+=+o.discount;P.comm+=+o.commission;P.orders++});
- var costed=S.menu.filter(function(m){return m.recipe&&m.recipe.length&&m.price});
- P.avgCostPct=costed.length?costed.reduce(function(a,m){return a+recipeCostAny(m)/m.price},0)/costed.length:0.32;
- P.costBasis=costed.length?'متوسط تكلفة '+costed.length+' صنفًا لهم وصفة':'افتراض 32% لعدم وجود وصفات';
  P.extCost=P.ext*P.avgCostPct;
- P.net=P.pos+P.ext;P.profit=P.net-P.comm-P.posCost-P.extCost-P.exp-P.waste;
+ P.net=P.pos+P.ext;P.posCost+=P.posEst;P.profit=P.net-P.comm-P.posCost-P.extCost-P.exp-P.waste;
  return P;
 }
 function recipeCostAny(m){var b=S.branches.filter(function(x){return x.ingredients.length})[0];return b?withBranch(b,function(){return recipeCost(m)}):0}
@@ -608,7 +608,7 @@ function askBox(){var chat=S.chat.length?S.chat:[{who:'bot',t:'اسألني عن
  '<div class="chips" style="margin:10px 0 0">'+['كم المبالغ تحت المراجعة؟','كم الربح؟','ما الأصناف الأقل هامشًا؟','هل أعرف الربح النهائي؟'].map(function(s){return '<button class="chip" data-act="quick" data-v="'+s+'">'+s+'</button>'}).join('')+'</div>'}
 function statPanel(id){var P=profit(),R=recon();
  if(id==='net')panel('طريقة الحساب','صافي المبيعات',kv('مبيعات كاشير ميزان',mny(P.pos))+kv('طلبات التطبيقات بعد الخصم',mny(P.ext))+kv('الخصومات على التطبيقات',mny(P.extDisc))+kv('الإجمالي',mny(P.net))+'<div class="note-box">المصدر: الطلبات المسجّلة في ميزان + ملفات التطبيقات المستوردة · الفترة: '+PERIODS[UI.period||'30d']+' · النطاق: '+esc(scopeLabel())+'</div>');
- if(id==='profit')panel('طريقة الحساب','ربح تشغيلي تقديري',kv('صافي المبيعات',mny(P.net))+kv('عمولات التطبيقات',mny(-P.comm))+kv('تكلفة مكونات الكاشير (من الوصفات)',mny(-P.posCost))+kv('تكلفة مكونات طلبات التطبيقات (تقديرية)',mny(-P.extCost))+kv('المصروفات المسجّلة',mny(-P.exp))+kv('الهالك وفروق الجرد',mny(-P.waste))+kv('الربح التشغيلي التقديري',mny(P.profit))+'<div class="note-box warn">تقديري: تكلفة طلبات التطبيقات محسوبة بنسبة '+fmt1(P.avgCostPct*100)+'% ('+esc(P.costBasis)+'). لا يشمل الإيجار والرواتب والإهلاك والضرائب.</div>');
+ if(id==='profit')panel('طريقة الحساب','ربح تشغيلي تقديري',kv('صافي المبيعات',mny(P.net))+kv('عمولات التطبيقات',mny(-P.comm))+kv('تكلفة مكونات الكاشير',mny(-P.posCost))+(P.posEst?kv('منها تقديري لأصناف بلا وصفة',mny(-P.posEst)):'')+kv('تكلفة مكونات طلبات التطبيقات (تقديرية)',mny(-P.extCost))+kv('المصروفات المسجّلة',mny(-P.exp))+kv('الهالك وفروق الجرد',mny(-P.waste))+kv('الربح التشغيلي التقديري',mny(P.profit))+'<div class="note-box warn">تقديري: تكلفة طلبات التطبيقات والأصناف التي بلا وصفة محسوبة بنسبة '+fmt1(P.avgCostPct*100)+'% ('+esc(P.costBasis)+'). لا يشمل الإيجار والرواتب والإهلاك والضرائب.</div>');
  if(id==='review')panel('طريقة الحساب','مبالغ تحت المراجعة',kv('إجمالي المستحق في الفترة',mny(R.T.due))+kv('المحوّل فعلًا',mny(R.T.paid))+kv('فروق مفتوحة ('+R.T.openN+' طلبًا)',mny(R.T.open))+kv('بانتظار كشف التحويل ('+R.T.pendingN+')',mny(R.T.pendingDue))+'<div class="note-box">الفرق = المستحق بعد العمولة − المحوّل في كشف التحويل. لا نحسب فرقًا نهائيًا لطلب لم يصدر كشف تحويل يغطي تاريخه.</div><div class="actions"><button class="btn" data-act="nav" data-v="settle">فتح التسويات</button></div>')}
 
 /* ---------- S03/S04 Settlements ---------- */
