@@ -7,7 +7,7 @@
 <title>اطلب الآن</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&display=block" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
@@ -176,6 +176,105 @@ input,select{font:inherit}
 .route div:last-child:before{background:var(--v)}
 .dstep{display:flex;gap:6px;margin:10px 0}.dstep i{flex:1;height:5px;border-radius:4px;background:var(--ln)}.dstep i.on{background:var(--o)}
 @media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.lanes,.grid2{grid-template-columns:1fr}.side{display:none}.topm{display:flex;position:sticky;top:0;z-index:5;background:var(--v);padding:10px 12px;gap:6px;overflow-x:auto}.topm button{flex:none;color:#D9D2EA;font-weight:700;padding:8px 12px;border-radius:10px;font-size:14px}.topm button.on{background:var(--y);color:var(--v)}.desk{flex-direction:column}.main{padding:14px}}
+
+/* ===== BRAND MVP THEME ===== */
+:root{--o:#E3121B;--y2:#FFC529;--cream:#FFF7EC;--ink2:#1B1012}
+body.m{background:#1B1012}
+body.m .mob{background:var(--cream)}
+.bhero{position:relative;height:520px;overflow:hidden;color:#fff;background:#120a0b}
+.bhero .bimg{position:absolute;inset:-40px 0 0;background:var(--img) center/cover no-repeat;transform:translateY(calc(var(--sy,0px)*.35)) scale(1.08);transform-origin:left center;animation:kb 14s ease-in-out infinite alternate}
+@keyframes kb{to{transform:translateY(calc(var(--sy,0px)*.35)) scale(1.18)}}
+.bhero:after{content:"";position:absolute;inset:0;background:linear-gradient(270deg,rgba(18,10,11,.92) 0%,rgba(18,10,11,.55) 48%,rgba(18,10,11,0) 75%),linear-gradient(0deg,rgba(18,10,11,.85),transparent 45%)}
+.bh-top{position:absolute;top:calc(14px + env(safe-area-inset-top));right:16px;left:16px;display:flex;align-items:center;gap:10px;z-index:2}
+.blogo{width:42px;height:42px;border-radius:14px;background:var(--o);display:grid;place-items:center;font-weight:900;font-size:22px;box-shadow:0 6px 18px rgba(0,0,0,.35);transform:rotate(-6deg)}
+.bh-top b{font-weight:900;font-size:19px;flex:1}
+.bzone{background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:999px;padding:6px 10px;font-weight:700;font-size:12px;outline:0;backdrop-filter:blur(8px)}
+.bzone option{color:#222}
+.bh-copy{position:absolute;right:20px;left:20px;bottom:34px;z-index:2}
+.bh-kick{display:inline-flex;align-items:center;gap:6px;background:var(--y2);color:var(--ink2);font-weight:800;font-size:12px;padding:4px 12px;border-radius:999px;animation:pop .6s .1s both}
+.bh-kick i{width:8px;height:8px;border-radius:50%;background:#1D9A4B;box-shadow:0 0 0 0 rgba(29,154,75,.6);animation:pulse 1.6s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(29,154,75,0)}100%{box-shadow:0 0 0 0 rgba(29,154,75,0)}}
+.bh-title{font-size:44px;line-height:1.12;font-weight:900;margin:12px 0 8px;letter-spacing:-.5px}
+.bh-title span{display:block;animation:rise .7s cubic-bezier(.2,.8,.2,1) both}
+.bh-title span:nth-child(2){animation-delay:.12s}
+.bh-title mark{background:none;color:var(--y2);position:relative}
+.bh-title mark:after{content:"";position:absolute;right:0;left:0;bottom:4px;height:10px;background:var(--o);z-index:-1;border-radius:4px;transform:skewX(-12deg) scaleX(0);transform-origin:right;animation:swipe .6s .55s forwards}
+@keyframes swipe{to{transform:skewX(-12deg) scaleX(1)}}
+@keyframes rise{from{opacity:0;transform:translateY(26px)}}
+@keyframes pop{from{opacity:0;transform:scale(.6)}}
+.bh-copy p{opacity:.88;font-size:15px;max-width:300px;animation:rise .7s .25s both}
+.bh-cta{margin-top:16px;background:var(--o);color:#fff;font-weight:900;font-size:17px;padding:14px 28px;border-radius:16px;display:inline-flex;align-items:center;gap:10px;box-shadow:0 10px 28px rgba(227,18,27,.45);animation:rise .7s .35s both;transition:transform .15s}
+.bh-cta:active{transform:scale(.95)}
+.bh-cta .arr{display:inline-block;animation:nudge 1.2s infinite}
+@keyframes nudge{50%{transform:translateX(-5px)}}
+.ticker{background:var(--y2);color:var(--ink2);overflow:hidden;white-space:nowrap;font-weight:900;font-size:14px;padding:9px 0;transform:rotate(-1.5deg) scale(1.04);margin:-14px 0 6px;position:relative;z-index:3;box-shadow:0 6px 18px rgba(0,0,0,.12)}
+.ticker .tk{display:inline-block;animation:marq 18s linear infinite;padding-right:100%}
+.ticker .tk span{margin:0 18px}
+.ticker .tk span:before{content:"✦";color:var(--o);margin-left:18px}
+@keyframes marq{from{transform:translateX(0)}to{transform:translateX(50%)}}
+.sech{display:flex;align-items:flex-end;justify-content:space-between;padding:22px 18px 10px}
+.sech h2{font-size:24px;font-weight:900;color:var(--ink2)}
+.sech h2 span{color:var(--o)}
+.offers{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 18px 10px;scrollbar-width:none}
+.offers::-webkit-scrollbar{display:none}
+.ofc{flex:none;width:84%;height:190px;border-radius:24px;overflow:hidden;position:relative;scroll-snap-align:center;cursor:pointer;color:#fff;box-shadow:0 12px 26px rgba(27,16,18,.18);transition:transform .2s}
+.ofc:active{transform:scale(.97)}
+.ofc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s}
+.ofc:hover img{transform:scale(1.06)}
+.ofc:after{content:"";position:absolute;inset:0;background:linear-gradient(270deg,rgba(200,16,46,.95) 0%,rgba(200,16,46,.6) 45%,transparent 75%)}
+.ofc.y:after{background:linear-gradient(270deg,rgba(255,197,41,.97) 0%,rgba(255,197,41,.7) 45%,transparent 78%)}
+.ofc.y{color:var(--ink2)}
+.ofc .oc-in{position:absolute;right:18px;top:18px;bottom:18px;z-index:2;display:flex;flex-direction:column;max-width:58%}
+.ofc .oc-tag{align-self:flex-start;background:#fff;color:var(--o);font-weight:900;font-size:11px;padding:3px 10px;border-radius:999px}
+.ofc b{font-size:23px;font-weight:900;line-height:1.2;margin-top:8px}
+.ofc small{opacity:.92;font-size:13px}
+.ofc .oc-p{margin-top:auto;font-weight:900;font-size:22px}
+.ofc .oc-p em{font-style:normal;font-size:13px}
+.btabs{position:sticky;top:0;z-index:5;background:var(--cream);display:flex;gap:8px;overflow-x:auto;padding:12px 18px;scrollbar-width:none;border-bottom:1px solid rgba(27,16,18,.06)}
+.btabs::-webkit-scrollbar{display:none}
+.btabs button{flex:none;padding:8px 16px;border-radius:999px;background:#fff;font-weight:800;font-size:14px;color:var(--ink2);box-shadow:0 2px 8px rgba(27,16,18,.06);transition:all .2s}
+.btabs button.on{background:var(--ink2);color:var(--y2);transform:scale(1.05)}
+.msec{padding:6px 14px 4px}
+.sect{font-size:20px;font-weight:900;color:var(--ink2);padding:14px 4px 10px;display:flex;align-items:center;gap:8px}
+.sect:after{content:"";flex:1;height:3px;border-radius:3px;background:repeating-linear-gradient(90deg,var(--o) 0 10px,transparent 10px 16px);opacity:.35}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.mcard{background:#fff;border-radius:22px;overflow:hidden;position:relative;cursor:pointer;box-shadow:0 6px 18px rgba(27,16,18,.07);transition:transform .2s,box-shadow .2s}
+.mcard:active{transform:scale(.97)}
+.mcard .mimg{height:128px;position:relative;overflow:hidden;background:#2a1a1c}
+.mcard .mimg img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.mcard:hover .mimg img{transform:scale(1.08)}
+.mcard .price{position:absolute;bottom:8px;right:8px;background:var(--y2);color:var(--ink2);font-weight:900;font-size:15px;padding:2px 10px;border-radius:10px;transform:rotate(-4deg);box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.mcard .price small{font-size:10px}
+.mcard .hot{position:absolute;top:8px;right:8px;background:var(--o);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border-radius:999px}
+.mcard .mbody{padding:10px 12px 46px}
+.mcard .mbody b{display:block;font-weight:900;font-size:15px;color:var(--ink2);line-height:1.35}
+.mcard .mbody p{font-size:12px;color:var(--mu);margin-top:2px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.madd{position:absolute;left:10px;bottom:10px;height:36px;min-width:36px;padding:0 10px;border-radius:12px;background:var(--o);color:#fff;font-weight:900;font-size:20px;display:grid;place-items:center;box-shadow:0 6px 14px rgba(227,18,27,.35);transition:transform .15s}
+.madd:active{transform:scale(.85)}
+.madd.q{background:var(--ink2);color:var(--y2);font-size:15px}
+.rv{opacity:0;transform:translateY(24px)}
+.rv.in{opacity:1;transform:none;transition:opacity .5s ease,transform .5s cubic-bezier(.2,.8,.2,1)}
+.rv.seen{opacity:1;transform:none}
+.cfab{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom));width:min(430px,calc(100% - 28px));z-index:8;background:var(--ink2);color:#fff;border-radius:20px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:0 14px 34px rgba(27,16,18,.35);animation:fabin .45s cubic-bezier(.2,1.4,.4,1) both;cursor:pointer}
+@media(min-width:700px){body.m .cfab{bottom:98px}}
+@keyframes fabin{from{transform:translate(-50%,40px);opacity:0}}
+.cfab .cnt{background:var(--y2);color:var(--ink2);font-weight:900;border-radius:12px;min-width:34px;height:34px;display:grid;place-items:center}
+.cfab.bump .cnt{animation:bump .5s}
+@keyframes bump{30%{transform:scale(1.45) rotate(-8deg)}60%{transform:scale(.9)}}
+.cfab b{flex:1;font-weight:900}
+.cfab .tot{font-weight:900;color:var(--y2)}
+.flyimg{position:fixed;z-index:99;border-radius:16px;object-fit:cover;pointer-events:none;box-shadow:0 10px 24px rgba(0,0,0,.3)}
+.credit{text-align:center;font-size:11px;color:var(--mu);padding:20px 0 120px}
+body.m .tabbar{background:#fff}
+body.m .tabbar button.on{color:var(--o)}
+.sheet .bsimg{height:260px;position:relative;overflow:hidden}
+.sheet .bsimg img{width:100%;height:100%;object-fit:cover;animation:zoomin 1s ease both}
+@keyframes zoomin{from{transform:scale(1.15)}}
+.sheet .bsimg:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.35),transparent 50%)}
+.calm .bh-title span,.calm .bh-kick,.calm .bh-copy p,.calm .bh-cta,.calm .bhero .bimg{animation:none}
+.calm .bh-title mark:after{animation:none;transform:skewX(-12deg) scaleX(1)}
+.calm .cfab{animation:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}}
 </style>
 </head>
 <body class="m">
@@ -185,7 +284,7 @@ const SB_URL='https://quicdsxjpxsoksvhwxcq.supabase.co',SB_KEY='sb_publishable_U
 const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'ra-auth'}});
 const CUR='ر.س';
 const QS=new URLSearchParams(location.search);
-const SINGLE=(QS.get('r')||'r1').replace(/[^a-z0-9_-]/gi,'');
+const SINGLE=(QS.get('r')||'r5').replace(/[^a-z0-9_-]/gi,'');
 const BR={name:(QS.get('name')||'').slice(0,40),color:/^[0-9a-f]{6}$/i.test(QS.get('color')||'')?'#'+QS.get('color'):null,tag:(QS.get('tag')||'').slice(0,80)};
 if(BR.color)document.documentElement.style.setProperty('--o',BR.color);
 const brandName=()=>BR.name||rest(SINGLE).name||'مطعمنا';
@@ -258,14 +357,31 @@ const myOrders=()=>G.orders.filter(o=>o.customer_id===G.session?.user.id&&o.rest
 const curOrder=()=>G.orders.find(o=>o.id===C.orderId);
 
 function cHome(){
- C.rid=SINGLE;const r=rest(SINGLE);if(!G.loaded)return '<div class="skel"></div><div class="skel"></div>';
- const z=zoneSel();const active=myOrders().find(o=>!['delivered','rejected'].includes(o.status));
- let body=cRest().replace('<button class="back" data-back aria-label="رجوع">→</button>','').replace('<div class="stickyb">','<div class="stickyb" style="bottom:calc(64px + env(safe-area-inset-bottom))">').replace(/<div class="pad"><div class="row sb"><div class="h1">[^<]*<\/div>/,'<div class="pad"><div class="row sb"><div class="h1">'+esc(brandName())+'</div>');
- if(BR.color)body=body.replace(/class="r-cover" style="background:[^"]*"/,'class="r-cover" style="background:linear-gradient(135deg,'+BR.color+'cc,'+BR.color+')"');
+ C.rid=SINGLE;const r=rest(SINGLE);
+ if(!G.loaded)return '<div class="skel" style="height:420px;margin:0;border-radius:0"></div><div class="skel"></div>';
  document.title=brandName();
- return `<div class="c-head" style="border-radius:0;padding-bottom:12px"><div class="row sb"><div class="addr">التوصيل إلى<br><select data-zone>${G.zones.filter(x=>x.active).map(x=>`<option value="${x.id}" ${x.id===z.id?'selected':''}>${esc(x.name)} ▾</option>`).join('')}</select></div><b style="font-size:18px">${esc(brandName())}</b></div>${BR.tag?`<div style="font-size:13px;opacity:.9;margin-top:6px">${esc(BR.tag)}</div>`:''}</div>
- ${active?`<div class="card row sb" style="margin:14px 18px 0;padding:12px 14px;border-color:var(--o);cursor:pointer" data-open="${active.id}"><div><b style="color:var(--v)">طلبك #${active.id} — ${statusLabel(active.status)[0]}</b><div class="mu">اضغط للمتابعة</div></div><span class="badge b-o">تتبع</span></div>`:''}
- ${body}`;
+ const items=menuOf(SINGLE).filter(m=>m.available),secs=[...new Set(items.map(m=>m.section))];
+ const z=zoneSel(),active=myOrders().find(o=>!['delivered','rejected'].includes(o.status));
+ const pick=id=>items.find(m=>m.id===id);
+ const offers=[[pick('x4')||items[0],'','عرض اليوم','وجبة الكومبو','برجر + بطاطس + مشروب'],[pick('x7')||items[1],'y','لأول طلب','خصم 30٪','استخدم كوبون «اهلا» عند الدفع'],[pick('x3')||items[2],'','جديد','كرسبي تشكن','مقرمش من برّه، طري من جوّه']].filter(o=>o[0]);
+ const inCart=id=>C.cart.rid===SINGLE?C.cart.lines.filter(l=>l.item_id===id).reduce((a,l)=>a+l.q,0):0;
+ const card=(m,i)=>{const q=inCart(m.id);return `<article class="mcard rv" data-item="${m.id}" data-rv="${m.id}" style="transition-delay:${(i%2)*70}ms"><div class="mimg">${m.image_url?`<img src="${esc(m.image_url)}" alt="${esc(m.name)}" loading="lazy">`:''}${m.section==='الأكثر طلبًا'&&i===0?'<span class="hot">الأكثر طلبًا</span>':''}<span class="price">${fmt(m.price)} <small>${CUR}</small></span></div><div class="mbody"><b>${esc(m.name)}</b><p>${esc(m.descr)}</p></div>${r.open?`<button class="madd ${q?'q':''}" data-quick="${m.id}" aria-label="أضف ${esc(m.name)}">${q?'×'+q:'+'}</button>`:''}</article>`};
+ const tick=['توصيل خلال '+esc(r.eta||'25')+' دقيقة','خصم 30٪ على أول طلب','لحم طازج يوميًا','صوص البيت السري'];
+ return `<section class="bhero" style="--img:url('${esc(r.image_url||'img/hero.jpg')}')"><div class="bimg" style="background-image:url('${esc(r.image_url||'img/hero.jpg')}')"></div>
+  <div class="bh-top"><div class="blogo">${esc(brandName().trim()[0]||'ب')}</div><b>${esc(brandName())}</b><select data-zone class="bzone" aria-label="منطقة التوصيل">${G.zones.filter(x=>x.active).map(x=>`<option value="${x.id}" ${x.id===z.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div>
+  <div class="bh-copy"><span class="bh-kick"><i></i>${r.open?'مفتوح الآن':'مغلق الآن'} · ${esc(r.eta)} دقيقة</span>
+  <h1 class="bh-title"><span>جوعان؟</span><span><mark>إحنا جاهزين</mark></span></h1>
+  <p>${esc(BR.tag||'برجر سماش على الصاج لحظة طلبك، يوصلك سخن.')}</p>
+  <button class="bh-cta" data-scrollmenu>اطلب الآن <span class="arr">←</span></button></div></section>
+ <div class="ticker" aria-hidden="true"><div class="tk">${[...tick,...tick].map(t=>`<span>${t}</span>`).join('')}</div></div>
+ ${active?`<div class="card row sb" style="margin:14px 18px 0;padding:12px 14px;border:2px solid var(--o);cursor:pointer;border-radius:18px" data-open="${active.id}"><div><b style="color:var(--ink2)">طلبك #${active.id} — ${statusLabel(active.status)[0]}</b><div class="mu">اضغط للمتابعة</div></div><span class="badge b-o">تتبع</span></div>`:''}
+ ${!r.open?`<div class="err" style="margin:14px 18px 0">المطعم مغلق الآن. تصفّح المنيو واطلب لاحقًا.</div>`:''}
+ <div class="sech"><h2>عروض <span>نار</span></h2><span class="mu">اسحب ←</span></div>
+ <div class="offers">${offers.map(o=>`<div class="ofc ${o[1]}" data-item="${o[0].id}"><img src="${esc(o[0].image_url||'')}" alt="" loading="lazy"><div class="oc-in"><span class="oc-tag">${o[2]}</span><b>${o[3]}</b><small>${o[4]}</small><span class="oc-p">${fmt(o[0].price)} <em>${CUR}</em></span></div></div>`).join('')}</div>
+ <nav class="btabs" id="btabs">${secs.map((s,i)=>`<button class="${(C.sec||secs[0])===s?'on':''}" data-sec="${esc(s)}">${esc(s)}</button>`).join('')}</nav>
+ ${secs.map(s=>`<section class="msec" data-secname="${esc(s)}"><h3 class="sect">${esc(s)}</h3><div class="mgrid">${items.filter(m=>m.section===s).map(card).join('')}</div></section>`).join('')}
+ <div class="credit">نموذج تجريبي · الصور من Freepik</div>
+ ${cartCount()&&C.cart.rid===SINGLE?`<div class="cfab ${C.bump?'bump':''}" data-go="cart"><span class="cnt">${cartCount()}</span><b>عرض السلة</b><span class="tot num">${fmt(cartSub())} ${CUR}</span></div>`:''}`;
 }
 function cHomeMarket(){
  const cats=['الكل',...new Set(G.rests.map(r=>r.cat))];
@@ -298,7 +414,7 @@ function unitOf(m,sh){if(!m.options)return +m.price;return +m.price+(sh.size==nu
 function cSheet(){
  const m=G.menu.find(x=>x.id===C.sheet.mid),sh=C.sheet,o=m.options;
  return `<div class="sheet-bg" data-close-sheet><div class="sheet">
- <div style="height:150px;background:var(--bg);display:grid;place-items:center">${foodM(m,80)}</div>
+ ${m.image_url?`<div class="bsimg"><img src="${esc(m.image_url)}" alt=""></div>`:`<div style="height:150px;background:var(--bg);display:grid;place-items:center">${foodM(m,80)}</div>`}
  <div class="pad"><div class="row sb"><div class="h1">${esc(m.name)}</div><b class="num" style="color:var(--v)">${fmt(m.price)} ${CUR}</b></div><div class="mu">${esc(m.descr)}</div>
  ${o?`<div style="margin-top:14px" class="row sb"><b style="color:var(--v)">الحجم</b><span class="badge ${sh.size==null?'b-r':'b-g'}">إجباري</span></div>
   ${o.size.map((x,i)=>`<div class="opt" data-size="${i}"><span><i class="radio ${sh.size===i?'on':''}"></i>${esc(x[0])}</span><span class="mu">${+x[1]?'+'+x[1]+' '+CUR:''}</span></div>`).join('')}
@@ -333,7 +449,7 @@ function cAuth(){
  ${C.authErr?`<div class="err">${esc(C.authErr)}</div>`:''}${C.authOk?`<div class="ok">${esc(C.authOk)}</div>`:''}
  <button class="btn p w100" style="margin-top:18px" ${C.busy?'disabled':''}>${C.busy?'لحظة…':t==='up'?'أنشئ حسابي':'دخول'}</button></form>
  <div class="demo"><b style="color:var(--v)">حسابات تجريبية للعرض</b><div class="mu">كلمة المرور لكل الحسابات: Demo@2026</div><div class="row">
- ${[['customer','عميل'],['restaurant','المطبخ وصاحب المطعم'],['driver','مندوب']].map(x=>`<button class="chip" data-demo="${x[0]}">${x[1]}</button>`).join('')}</div></div></div>`;
+ ${[['customer','عميل'],['kitchen','المطبخ وصاحب المطعم'],['driver','مندوب']].map(x=>`<button class="chip" data-demo="${x[0]}">${x[1]}</button>`).join('')}</div></div></div>`;
 }
 function cCheckout(){
  const r=rest(C.cart.rid),z=zoneSel(),tot=cartSub()+ +z.fee-disc(),wal=+(G.profile?.wallet||0);
@@ -400,6 +516,20 @@ function renderCustomer(){
  return `<div class="mob"><div class="view">${(fm[C.screen]||cHome)()}</div>
  ${tabs?`<nav class="tabbar">${[['home','القائمة',ic.home],['orders','طلباتي',ic.bag],['account','حسابي',ic.user]].map(t=>`<button class="${C.screen===t[0]?'on':''}" data-tab="${t[0]}">${t[0]==='orders'&&live?'<i class="dotn"></i>':''}${t[2]}${t[1]}</button>`).join('')}</nav>`:''}</div>${C.sheet?cSheet():''}`;
 }
+function fly(src,rect){
+ const fab=document.querySelector('.cfab');if(!src||!rect||!fab)return;
+ const c=document.createElement('img');c.src=src.src;c.className='flyimg';Object.assign(c.style,{left:rect.left+'px',top:rect.top+'px',width:rect.width+'px',height:rect.height+'px'});document.body.appendChild(c);
+ const f=fab.querySelector('.cnt').getBoundingClientRect();const dx=f.left+f.width/2-(rect.left+rect.width/2),dy=f.top+f.height/2-(rect.top+rect.height/2);
+ const a=c.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${dx*.5}px,${dy*.5-80}px) scale(.55)`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(.08)`,opacity:.6}],{duration:700,easing:'cubic-bezier(.5,0,.6,1)'});
+ a.onfinish=()=>c.remove();
+}
+const SEEN=new Set();let rvObs=null;
+function reveal(){
+ if(!('IntersectionObserver' in window)){document.querySelectorAll('.rv').forEach(e=>e.classList.add('seen'));return}
+ rvObs=rvObs||new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');SEEN.add(en.target.dataset.rv);rvObs.unobserve(en.target)}}),{threshold:.12});
+ document.querySelectorAll('.rv').forEach(e=>{if(SEEN.has(e.dataset.rv))e.classList.add('seen');else rvObs.observe(e)});
+}
+addEventListener('scroll',()=>{const h=document.querySelector('.bhero');if(h&&scrollY<700)h.style.setProperty('--sy',scrollY+'px')},{passive:true});
 function addLine(m,size,add,q,note){
  if(C.cart.rid&&C.cart.rid!==m.restaurant_id&&C.cart.lines.length){C.cart={rid:null,lines:[]};C.coupon=null;toast('بدأنا سلة جديدة من '+rest(m.restaurant_id).name)}
  C.cart.rid=m.restaurant_id;
@@ -419,14 +549,15 @@ async function custClick(e){
  if(d.back!==undefined){back();return}
  if(d.home!==undefined){C.hist=[];C.screen='home';render();return}
  if(d.login!==undefined){C.after=null;go('auth');return}
+ if(d.scrollmenu!==undefined){const b=document.getElementById('btabs');if(b)scrollTo({top:b.getBoundingClientRect().top+scrollY-4,behavior:'smooth'});return}
  if(d.go){go(d.go);return}
  if(d.sec){C.sec=d.sec;render();const tgt=document.querySelector(`[data-secname="${CSS.escape(d.sec)}"]`);if(tgt)scrollTo({top:tgt.getBoundingClientRect().top+scrollY-60,behavior:'smooth'});return}
- if(d.quick){const m=G.menu.find(x=>x.id===d.quick);if(m.options){C.sheet={mid:m.id,size:null,add:[],q:1,note:''};render();return}addLine(m,0,[],1,'');render();return}
+ if(d.quick){const m=G.menu.find(x=>x.id===d.quick);if(m.options){C.sheet={mid:m.id,size:null,add:[],q:1,note:''};render();return}const src=t.closest('.mcard')?.querySelector('img');const rect=src?.getBoundingClientRect();addLine(m,0,[],1,'');C.bump=true;render();fly(src,rect);setTimeout(()=>{C.bump=false},600);return}
  if(d.item){if(!rest(C.rid).open){toast('المطعم مغلق الآن');return}const m=G.menu.find(x=>x.id===d.item);C.sheet={mid:m.id,size:m.options?null:0,add:[],q:1,note:''};render();return}
  if(d.size){C.sheet.size=+d.size;render();return}
  if(d.add){const i=+d.add,a=C.sheet.add;a.includes(i)?a.splice(a.indexOf(i),1):a.push(i);render();return}
  if(d.qty){C.sheet.q=Math.max(1,Math.min(50,C.sheet.q+ +d.qty));render();return}
- if(d.addcart!==undefined){const m=G.menu.find(x=>x.id===C.sheet.mid);if(m.options&&C.sheet.size==null){toast('اختر الحجم أولًا',1);return}addLine(m,C.sheet.size||0,C.sheet.add,C.sheet.q,(document.getElementById('inote')?.value||'').trim());C.sheet=null;render();return}
+ if(d.addcart!==undefined){C.bump=true;setTimeout(()=>{C.bump=false},600);const m=G.menu.find(x=>x.id===C.sheet.mid);if(m.options&&C.sheet.size==null){toast('اختر الحجم أولًا',1);return}addLine(m,C.sheet.size||0,C.sheet.add,C.sheet.q,(document.getElementById('inote')?.value||'').trim());C.sheet=null;render();return}
  if(d.cq){const l=C.cart.lines[+d.cq];l.q+= +d.d;if(l.q<=0)C.cart.lines.splice(+d.cq,1);if(!C.cart.lines.length){C.cart.rid=null;C.coupon=null}saveCart();render();return}
  if(d.coupon!==undefined){const v=(document.getElementById('cpn').value||'').trim().replace(/[إأآ]/g,'ا');C.couponIn=v;if(!v){C.couponErr='اكتب كود الكوبون أولًا';render();return}
   if(!G.session){C.couponErr='سجّل الدخول لتطبيق الكوبون';render();return}
@@ -587,6 +718,8 @@ function render(){
  const html=rl==='restaurant'?renderRestaurant():rl==='driver'?renderDriver():rl==='admin'?renderAdmin():renderCustomer();
  const keep={};app.querySelectorAll('input[id]').forEach(i=>keep[i.id]=i.value);
  app.innerHTML=html;
+ requestAnimationFrame(reveal);
+ if(!window._calmT&&document.querySelector('.bhero'))window._calmT=setTimeout(()=>document.documentElement.classList.add('calm'),1600);
  for(const id in keep){const el=document.getElementById(id);if(el&&!['q'].includes(id)&&el.type!=='password'&&!el.value)el.value=keep[id];if(el&&el.type==='password'&&keep[id])el.value=keep[id]}
  if(fid){const el=document.getElementById(fid);if(el){el.focus();try{if(fpos!=null)el.setSelectionRange(fpos,fpos)}catch(e){}}}
 }
