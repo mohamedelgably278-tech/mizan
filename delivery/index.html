@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&display=block" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{--v:#301A5B;--vl:#EEE9F7;--o:#FF4900;--ol:#FFF1E8;--y:#FFCC33;--yl:#FFF6D9;--g:#1D6B43;--gl:#E3F4EA;--r:#AC0019;--rl:#FCE8EB;--bg:#F6F3F9;--ink:#262626;--mu:#6B6375;--ln:#ECE6F1;--sh:0 8px 24px rgba(48,26,91,.08);--sh2:0 20px 50px rgba(48,26,91,.18)}
@@ -17,6 +18,11 @@ body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--i
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
 input,select{font:inherit}
 .num{font-variant-numeric:tabular-nums}
+.ms{font-family:"Material Symbols Rounded";font-weight:normal;font-style:normal;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;direction:ltr;-webkit-font-feature-settings:"liga";font-feature-settings:"liga";-webkit-font-smoothing:antialiased;vertical-align:middle}
+.food{color:#fff;opacity:.95;text-shadow:0 6px 18px rgba(0,0,0,.18)}
+.th .ms{color:var(--v);opacity:.75}
+.empty .ic .ms{font-size:52px;color:#CFC6DA}
+.thimg{width:100%;height:100%;object-fit:cover;border-radius:inherit}
 /* mobile shell */
 .mob{max-width:460px;margin:0 auto;min-height:100%;background:#fff;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 1px var(--ln)}
 @media(min-width:700px){body.m{padding:24px 0}body.m .mob{min-height:calc(100vh - 48px);border-radius:28px;overflow:hidden;box-shadow:var(--sh2)}}
@@ -182,6 +188,9 @@ const ERR={not_authenticated:'سجّل الدخول أولًا',restaurant_close
 function errMsg(e){const m=(e&&(e.message||e.error_description||e))+'';for(const k in ERR)if(m.includes(k))return ERR[k];if(/password/i.test(m))return 'كلمة المرور يجب ألا تقل عن 6 أحرف';if(/fetch|network/i.test(m))return 'تعذّر الاتصال، تحقق من الإنترنت';return 'حدث خطأ، حاول مرة أخرى'}
 const fmt=n=>(Math.round((+n||0)*100)/100).toLocaleString('en-US');
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const I=(n,sz)=>`<span class="ms"${sz?` style="font-size:${sz}px"`:''}>${n}</span>`;
+const foodR=(r,sz)=>r.image_url?`<img class="thimg" src="${esc(r.image_url)}" alt="">`:`<span class="ms food" style="font-size:${sz}px">${esc(r.icon||'restaurant')}</span>`;
+const foodM=(m,sz)=>m.image_url?`<img class="thimg" src="${esc(m.image_url)}" alt="">`:`<span class="ms" style="font-size:${sz}px">${esc(m.icon||'restaurant')}</span>`;
 const LS={get(k,d){try{const v=localStorage.getItem('dl_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('dl_'+k,JSON.stringify(v))}catch(e){}}};
 
 /* ---------- global state ---------- */
@@ -206,8 +215,8 @@ async function loadOrders(){
  const {data,error}=await sb.from('dl_orders').select('*').order('created_at',{ascending:false}).limit(300);
  if(error){console.error(error);return}
  const rl=role();
- if(rl==='restaurant'){const fresh=data.filter(o=>o.status==='new'&&!ST.known.has(o.id));if(!ST.first&&fresh.length){beep();toast('🔔 طلب جديد #'+fresh[0].id)}data.forEach(o=>ST.known.add(o.id));ST.first=false}
- if(rl==='driver'){const fresh=data.filter(o=>!o.driver_id&&!ST.known.has(o.id));if(!ST.first&&fresh.length&&ST.online){beep();toast('🛵 طلب توصيل جديد')}data.forEach(o=>ST.known.add(o.id));ST.first=false;
+ if(rl==='restaurant'){const fresh=data.filter(o=>o.status==='new'&&!ST.known.has(o.id));if(!ST.first&&fresh.length){beep();toast('طلب جديد #'+fresh[0].id)}data.forEach(o=>ST.known.add(o.id));ST.first=false}
+ if(rl==='driver'){const fresh=data.filter(o=>!o.driver_id&&!ST.known.has(o.id));if(!ST.first&&fresh.length&&ST.online){beep();toast('طلب توصيل جديد')}data.forEach(o=>ST.known.add(o.id));ST.first=false;
   const s=await sb.rpc('dl_driver_stats');if(!s.error)G.stats=s.data}
  G.orders=data;
  if(rl==='admin'){const c=await sb.from('dl_coupons').select('*').order('code');if(!c.error)G.coupons=c.data}
@@ -255,26 +264,26 @@ function cHome(){
  <div class="cats">${cats.map(c=>`<button class="chip ${C.cat===c?'on':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('')}</div>
  ${past.length&&!C.q?`<div class="pad" style="padding-bottom:6px"><div class="h2">اطلب مجددًا</div></div><div class="reorder">${past.slice(0,4).map(o=>`<button data-reorder="${o.id}"><b style="color:var(--v);font-size:14px">${esc(rest(o.restaurant_id).name)}</b><div class="mu">${esc(o.items.map(i=>i.name).join('، ').slice(0,30))}</div></button>`).join('')}</div>`:''}
  <div class="pad" style="padding-bottom:0"><div class="h2">${C.q?'نتائج البحث':'مطاعم قريبة منك'}</div></div>
- ${!G.loaded?'<div class="skel"></div><div class="skel"></div>':list.length?list.map(r=>`<div class="rest ${r.open?'':'closed'}" data-rest="${r.id}"><div class="img" style="background:${esc(r.bg)}">${esc(r.emoji)}${r.open?(r.sort===1?'<span class="tag badge b-y">الأكثر طلبًا</span>':''):`<span class="tag badge b-r">مغلق${r.opens_at?' · يفتح '+esc(r.opens_at):''}</span>`}</div>
+ ${!G.loaded?'<div class="skel"></div><div class="skel"></div>':list.length?list.map(r=>`<div class="rest ${r.open?'':'closed'}" data-rest="${r.id}"><div class="img" style="background:${esc(r.bg)}">${foodR(r,56)}${r.open?(r.sort===1?'<span class="tag badge b-y">الأكثر طلبًا</span>':''):`<span class="tag badge b-r">مغلق${r.opens_at?' · يفتح '+esc(r.opens_at):''}</span>`}</div>
   <div class="in row sb"><div><b style="color:var(--v);font-size:16px">${esc(r.name)}</b><div class="mu">${esc(r.cat)} · ${esc(r.eta)} دقيقة · توصيل ${fmt(z.fee)} ${CUR}</div></div><span class="badge b-v">★ ${r.rating}</span></div></div>`).join('')
- :`<div class="empty"><div class="ic">🔎</div>لا توجد نتائج لـ «${esc(C.q)}»<br><button class="btn s" style="margin:14px auto 0" data-clearq>عرض كل المطاعم</button></div>`}`;
+ :`<div class="empty"><div class="ic">${I("search_off")}</div>لا توجد نتائج لـ «${esc(C.q)}»<br><button class="btn s" style="margin:14px auto 0" data-clearq>عرض كل المطاعم</button></div>`}`;
 }
 function cRest(){
  const r=rest(C.rid),items=menuOf(r.id).filter(m=>m.available),secs=[...new Set(items.map(m=>m.section))];
  const inCart=id=>C.cart.rid===r.id?C.cart.lines.filter(l=>l.item_id===id).reduce((a,l)=>a+l.q,0):0;
- return `<div class="r-cover" style="background:${esc(r.bg)}"><button class="back" data-back aria-label="رجوع">→</button>${esc(r.emoji)}</div>
+ return `<div class="r-cover" style="background:${esc(r.bg)}"><button class="back" data-back aria-label="رجوع">→</button>${foodR(r,76)}</div>
  <div class="pad"><div class="row sb"><div class="h1">${esc(r.name)}</div><span class="badge b-v">★ ${r.rating} (${esc(r.rating_cnt)})</span></div>
  <div class="mu" style="margin-top:4px">${esc(r.eta)} دقيقة · توصيل ${fmt(zoneSel().fee)} ${CUR} · الحد الأدنى ${fmt(r.min_order)} ${CUR}</div>
  ${r.open?'':`<div class="err">المطعم مغلق الآن${r.opens_at?' ويفتح '+esc(r.opens_at):''}. تصفح المنيو واطلب لاحقًا.</div>`}</div>
  <div class="mtabs">${secs.map(s=>`<button class="chip ${(C.sec||secs[0])===s?'on':''}" data-sec="${esc(s)}">${esc(s)}</button>`).join('')}</div>
- ${secs.map((s,k)=>`<div id="sec-${k}" data-secname="${esc(s)}"><div class="pad" style="padding-bottom:4px"><b style="color:var(--v)">${esc(s)}</b></div>${items.filter(m=>m.section===s).map(m=>{const q=inCart(m.id);return `<div class="item" data-item="${m.id}"><div style="flex:1"><b>${esc(m.name)}</b><div class="mu">${esc(m.descr)}</div><div style="margin-top:6px;font-weight:800;color:var(--v)" class="num">${fmt(m.price)} ${CUR}${m.options?'<span class="mu" style="font-weight:600"> · خيارات</span>':''}</div></div><div class="th">${esc(m.emoji)}${r.open?(q?`<span class="q">${q}</span>`:`<span class="add" data-quick="${m.id}">+</span>`):''}</div></div>`}).join('')}</div>`).join('')}
+ ${secs.map((s,k)=>`<div id="sec-${k}" data-secname="${esc(s)}"><div class="pad" style="padding-bottom:4px"><b style="color:var(--v)">${esc(s)}</b></div>${items.filter(m=>m.section===s).map(m=>{const q=inCart(m.id);return `<div class="item" data-item="${m.id}"><div style="flex:1"><b>${esc(m.name)}</b><div class="mu">${esc(m.descr)}</div><div style="margin-top:6px;font-weight:800;color:var(--v)" class="num">${fmt(m.price)} ${CUR}${m.options?'<span class="mu" style="font-weight:600"> · خيارات</span>':''}</div></div><div class="th">${foodM(m,40)}${r.open?(q?`<span class="q">${q}</span>`:`<span class="add" data-quick="${m.id}">+</span>`):''}</div></div>`}).join('')}</div>`).join('')}
  ${cartCount()&&C.cart.rid===r.id?`<div class="stickyb"><button class="btn p w100" data-go="cart"><span class="badge" style="background:rgba(255,255,255,.25);color:#fff">${cartCount()}</span>عرض السلة<span style="margin-inline-start:auto" class="num">${fmt(cartSub())} ${CUR}</span></button></div>`:''}`;
 }
 function unitOf(m,sh){if(!m.options)return +m.price;return +m.price+(sh.size==null?0:+m.options.size[sh.size][1])+sh.add.reduce((a,i)=>a+ +m.options.add[i][1],0)}
 function cSheet(){
  const m=G.menu.find(x=>x.id===C.sheet.mid),sh=C.sheet,o=m.options;
  return `<div class="sheet-bg" data-close-sheet><div class="sheet">
- <div style="height:150px;background:var(--bg);display:grid;place-items:center;font-size:72px">${esc(m.emoji)}</div>
+ <div style="height:150px;background:var(--bg);display:grid;place-items:center">${foodM(m,80)}</div>
  <div class="pad"><div class="row sb"><div class="h1">${esc(m.name)}</div><b class="num" style="color:var(--v)">${fmt(m.price)} ${CUR}</b></div><div class="mu">${esc(m.descr)}</div>
  ${o?`<div style="margin-top:14px" class="row sb"><b style="color:var(--v)">الحجم</b><span class="badge ${sh.size==null?'b-r':'b-g'}">إجباري</span></div>
   ${o.size.map((x,i)=>`<div class="opt" data-size="${i}"><span><i class="radio ${sh.size===i?'on':''}"></i>${esc(x[0])}</span><span class="mu">${+x[1]?'+'+x[1]+' '+CUR:''}</span></div>`).join('')}
@@ -285,10 +294,10 @@ function cSheet(){
  <button class="btn p" style="flex:1" data-addcart>أضف إلى السلة · <span class="num">${fmt(unitOf(m,sh)*sh.q)} ${CUR}</span></button></div></div></div></div>`;
 }
 function cCart(){
- if(!cartCount())return `<div class="pad row"><button class="back" data-back>→</button><div class="h1">السلة</div></div><div class="empty"><div class="ic">🛍️</div>سلتك فارغة<br><button class="btn p" style="margin:16px auto 0" data-home>تصفح المطاعم</button></div>`;
+ if(!cartCount())return `<div class="pad row"><button class="back" data-back>→</button><div class="h1">السلة</div></div><div class="empty"><div class="ic">${I("shopping_bag")}</div>سلتك فارغة<br><button class="btn p" style="margin:16px auto 0" data-home>تصفح المطاعم</button></div>`;
  const r=rest(C.cart.rid),sub=cartSub(),d=disc(),fee=+zoneSel().fee,tot=sub+fee-d,short=r.min_order-sub;
  return `<div class="pad row"><button class="back" data-back>→</button><div><div class="h1">سلتك</div><div class="mu">${esc(r.name)}</div></div></div>
- <div class="pad" style="padding-top:0">${C.cart.lines.map((l,i)=>`<div class="row sb" style="padding:12px 0;border-bottom:1px solid var(--ln)"><div style="flex:1"><b>${esc(l.name)}</b>${l.extra?`<div class="mu">${esc(l.extra)}</div>`:''}<div class="num" style="font-weight:800;color:var(--v);margin-top:2px">${fmt(l.unit*l.q)} ${CUR}</div></div><div class="stepper"><button data-cq="${i}" data-d="1">+</button><b class="num">${l.q}</b><button data-cq="${i}" data-d="-1">${l.q===1?'🗑':'−'}</button></div></div>`).join('')}
+ <div class="pad" style="padding-top:0">${C.cart.lines.map((l,i)=>`<div class="row sb" style="padding:12px 0;border-bottom:1px solid var(--ln)"><div style="flex:1"><b>${esc(l.name)}</b>${l.extra?`<div class="mu">${esc(l.extra)}</div>`:''}<div class="num" style="font-weight:800;color:var(--v);margin-top:2px">${fmt(l.unit*l.q)} ${CUR}</div></div><div class="stepper"><button data-cq="${i}" data-d="1">+</button><b class="num">${l.q}</b><button data-cq="${i}" data-d="-1">${l.q===1?I('delete',18):'−'}</button></div></div>`).join('')}
  <button style="color:var(--o);font-weight:800;padding:12px 0" data-rest="${r.id}">+ أضف أصنافًا أخرى</button>
  <div class="row" style="margin-top:4px"><div class="field" style="flex:1;padding:7px 12px"><input id="cpn" placeholder="كوبون الخصم (جرّب: اهلا)" value="${esc(C.couponIn)}"></div><button class="btn s" style="padding:10px 16px" data-coupon>تطبيق</button></div>
  ${C.couponErr?`<div class="err">${C.couponErr}</div>`:''}${C.coupon?`<div class="ok">✓ ${esc(C.coupon.label)}</div>`:''}
@@ -313,15 +322,15 @@ function cAuth(){
 }
 function cCheckout(){
  const r=rest(C.cart.rid),z=zoneSel(),tot=cartSub()+ +z.fee-disc(),wal=+(G.profile?.wallet||0);
- const pms=[['cash','💵','نقدًا عند الاستلام',''],['card','💳','بطاقة مدى / فيزا','الدفع الإلكتروني يُربط بالبوابة عند الإطلاق'],['wallet','👛','المحفظة','الرصيد: '+fmt(wal)+' '+CUR]];
+ const pms=[['cash','payments','نقدًا عند الاستلام',''],['card','credit_card','بطاقة مدى / فيزا','الدفع الإلكتروني يُربط بالبوابة عند الإطلاق'],['wallet','account_balance_wallet','المحفظة','الرصيد: '+fmt(wal)+' '+CUR]];
  const short=C.pay==='wallet'&&tot>wal;
  return `<div class="pad row"><button class="back" data-back>→</button><div class="h1">إتمام الطلب</div></div>
  <div class="pad" style="padding-top:0">
- <label class="lbl">📍 منطقة التوصيل</label><div class="field"><select data-zone>${G.zones.filter(x=>x.active).map(x=>`<option value="${x.id}" ${x.id===z.id?'selected':''}>${esc(x.name)} — ${fmt(x.fee)} ${CUR}</option>`).join('')}</select></div>
+ <label class="lbl">منطقة التوصيل</label><div class="field"><select data-zone>${G.zones.filter(x=>x.active).map(x=>`<option value="${x.id}" ${x.id===z.id?'selected':''}>${esc(x.name)} — ${fmt(x.fee)} ${CUR}</option>`).join('')}</select></div>
  <label class="lbl">العنوان بالتفصيل</label><div class="field"><input id="caddr" maxlength="150" placeholder="الشارع، رقم المبنى، الشقة" value="${esc(C.addr)}"></div>
- <div class="card row sb" style="padding:12px 14px;margin-top:12px"><b style="color:var(--v)">⏱ وقت التوصيل</b><span class="mu">الآن · ${esc(r.eta)} دقيقة</span></div>
+ <div class="card row sb" style="padding:12px 14px;margin-top:12px"><b style="color:var(--v)">وقت التوصيل</b><span class="mu">الآن · ${esc(r.eta)} دقيقة</span></div>
  <div class="h2" style="margin:18px 0 10px">طريقة الدفع</div>
- ${pms.map(p=>`<div class="pm ${C.pay===p[0]?'on':''}" data-pay="${p[0]}"><i class="radio ${C.pay===p[0]?'on':''}"></i><span style="font-size:22px">${p[1]}</span><div style="flex:1"><b>${p[2]}</b>${p[3]?`<div class="mu">${p[3]}</div>`:''}</div></div>`).join('')}
+ ${pms.map(p=>`<div class="pm ${C.pay===p[0]?'on':''}" data-pay="${p[0]}"><i class="radio ${C.pay===p[0]?'on':''}"></i><span style="color:var(--v)">${I(p[1],24)}</span><div style="flex:1"><b>${p[2]}</b>${p[3]?`<div class="mu">${p[3]}</div>`:''}</div></div>`).join('')}
  ${short?`<div class="err">رصيد المحفظة لا يكفي. اختر طريقة أخرى.</div>`:''}
  <div class="field" style="margin-top:6px"><input id="dnote" maxlength="150" placeholder="ملاحظة للمندوب: اتصل عند الوصول" value="${esc(C.note)}"></div>
  <div class="line t" style="margin-top:14px"><span>الإجمالي</span><span class="num">${fmt(tot)} ${CUR}</span></div></div>
@@ -332,7 +341,7 @@ const STEPS=['تم الإرسال','يُجهَّز','في الطريق','وصل'
 const stepIdx=o=>({new:0,preparing:1,ready:1,picked:2,delivered:3})[o.status]??0;
 function cTrack(){
  const o=curOrder();if(!o)return `<div class="spin"></div>`;const r=rest(o.restaurant_id);
- if(o.status==='rejected')return `<div class="pad row"><button class="back" data-home>→</button></div><div class="empty"><div class="ic">😔</div><div class="h1">اعتذر المطعم عن طلبك</div><p style="margin:8px 0 18px">${o.pay_method==='cash'?'لم يتم خصم أي مبلغ.':'تم استرداد المبلغ كاملًا.'}</p><button class="btn p" style="margin:auto" data-home>اختر مطعمًا آخر</button></div>`;
+ if(o.status==='rejected')return `<div class="pad row"><button class="back" data-home>→</button></div><div class="empty"><div class="ic">${I("sentiment_dissatisfied")}</div><div class="h1">اعتذر المطعم عن طلبك</div><p style="margin:8px 0 18px">${o.pay_method==='cash'?'لم يتم خصم أي مبلغ.':'تم استرداد المبلغ كاملًا.'}</p><button class="btn p" style="margin:auto" data-home>اختر مطعمًا آخر</button></div>`;
  const i=stepIdx(o);
  const titles={new:'بانتظار تأكيد المطعم…',preparing:'المطعم يجهّز طلبك',ready:'طلبك جاهز وبانتظار المندوب',picked:'المندوب في الطريق إليك',delivered:'تم التوصيل، بالهناء والشفاء!'};
  const pos=o.status==='delivered'?[300,220]:o.status==='picked'?[[60,60],[170,120],[240,170],[290,210]][o.driver_stage]||[200,150]:[60,60];
@@ -342,7 +351,7 @@ function cTrack(){
   <button class="back" style="position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px" data-home>→</button></div>
  <div class="pad"><div class="h2">${titles[o.status]}</div><div class="mu">طلب #${o.id} · ${esc(r.name)}${['preparing','ready'].includes(o.status)?` · يصل خلال ${(o.prep_min||15)+10} دقيقة تقريبًا`:''}</div>
  <div class="track"><span class="bar" style="width:calc(${i/3*100}% - ${i/3*48}px)"></span>${STEPS.map((s,k)=>`<div class="s ${k<=i?'done':''}"><i>${k<=i?'✓':k+1}</i>${s}</div>`).join('')}</div>
- ${o.driver_id&&o.status!=='delivered'?`<div class="card row" style="padding:12px;gap:12px"><div style="width:44px;height:44px;border-radius:50%;background:var(--vl);display:grid;place-items:center;font-size:20px">🛵</div><div style="flex:1"><b>${o.status==='picked'?'المندوب في الطريق':'المندوب متجه للمطعم'}</b><div class="mu">سيتصل بك عند الوصول</div></div></div>
+ ${o.driver_id&&o.status!=='delivered'?`<div class="card row" style="padding:12px;gap:12px"><div style="width:44px;height:44px;border-radius:50%;background:var(--vl);display:grid;place-items:center;color:var(--v)">${I("two_wheeler",24)}</div><div style="flex:1"><b>${o.status==='picked'?'المندوب في الطريق':'المندوب متجه للمطعم'}</b><div class="mu">سيتصل بك عند الوصول</div></div></div>
  <div class="card row sb" style="padding:12px 14px;margin-top:10px;background:var(--yl);border-color:#F5E2A8"><span>كود التسليم — أعطه للمندوب</span><b class="num" style="font-size:24px;color:var(--v);letter-spacing:3px">${esc(o.delivery_code)}</b></div>`:''}
  <details style="margin-top:12px" open><summary style="cursor:pointer;font-weight:800;color:var(--v)">تفاصيل الطلب</summary>${o.items.map(it=>`<div class="line"><span>${it.q}× ${esc(it.name)}</span><span class="num">${fmt(it.q*it.price)}</span></div>`).join('')}<div class="line"><span>التوصيل</span><span class="num">${fmt(o.fee)}</span></div>${+o.discount?`<div class="line" style="color:var(--g)"><span>الخصم</span><span class="num">−${fmt(o.discount)}</span></div>`:''}<div class="line t"><span>الإجمالي · ${{cash:'نقدًا',card:'بطاقة',wallet:'محفظة'}[o.pay_method]}</span><span class="num">${fmt(o.total)} ${CUR}</span></div></details>
  ${o.status==='delivered'&&!o.rating_food?`<button class="btn p w100" style="margin-top:16px" data-go="rate">قيّم طلبك</button>`:''}${o.rating_food?`<div class="ok" style="text-align:center">شكرًا لتقييمك ★ ${o.rating_food}</div>`:''}
@@ -351,18 +360,18 @@ function cTrack(){
 function cRate(){
  const o=curOrder(),rt=C.rating,tags=['سريع','ساخن','كمية ممتازة','تغليف جيد','تأخر'];
  const st=k=>`<div class="stars">${[5,4,3,2,1].map(n=>`<button class="${rt[k]>=n?'on':''}" data-star="${k}" data-n="${n}" aria-label="${n}">★</button>`).join('')}</div>`;
- return `<div class="pad" style="padding-top:40px;text-align:center"><div style="font-size:54px">🎉</div><div class="h1">كيف كان طلبك؟</div><div class="mu">${esc(rest(o.restaurant_id).name)} · #${o.id}</div></div>
+ return `<div class="pad" style="padding-top:40px;text-align:center"><div style="color:var(--o)">${I("celebration",56)}</div><div class="h1">كيف كان طلبك؟</div><div class="mu">${esc(rest(o.restaurant_id).name)} · #${o.id}</div></div>
  <div class="pad"><div class="row sb"><b>الطعام</b>${st('f')}</div><div class="row sb" style="margin-top:12px"><b>المندوب</b>${st('d')}</div>
  <div class="row" style="flex-wrap:wrap;gap:8px;margin-top:18px">${tags.map(t=>`<button class="chip ${rt.tags.includes(t)?'on':''}" data-tag="${t}">${t}</button>`).join('')}</div>
  <button class="btn p w100" style="margin-top:24px" data-rate ${rt.f&&rt.d?'':'disabled'}>أرسل التقييم</button><button class="mu w100" style="margin-top:12px" data-home>تخطَّ</button></div>`;
 }
 function cOrders(){
- if(!G.session)return `<div class="pad"><div class="h1">طلباتي</div></div><div class="empty"><div class="ic">🧾</div>سجّل الدخول لترى طلباتك<br><button class="btn p" style="margin:16px auto 0" data-login>تسجيل الدخول</button></div>`;
+ if(!G.session)return `<div class="pad"><div class="h1">طلباتي</div></div><div class="empty"><div class="ic">${I("receipt_long")}</div>سجّل الدخول لترى طلباتك<br><button class="btn p" style="margin:16px auto 0" data-login>تسجيل الدخول</button></div>`;
  const mine=myOrders();
- return `<div class="pad"><div class="h1">طلباتي</div></div>${mine.length?mine.map(o=>{const l=statusLabel(o.status);return `<div class="card" style="margin:0 18px 10px;padding:14px;cursor:pointer" data-open="${o.id}"><div class="row sb"><b style="color:var(--v)">${esc(rest(o.restaurant_id).name)}</b><span class="badge ${l[1]}">${l[0]}</span></div><div class="mu">#${o.id} · ${new Date(o.created_at).toLocaleString('ar-SA',{dateStyle:'medium',timeStyle:'short'})} · <span class="num">${fmt(o.total)} ${CUR}</span></div></div>`}).join(''):`<div class="empty"><div class="ic">🧾</div>لا توجد طلبات بعد<br><button class="btn p" style="margin:16px auto 0" data-home>اطلب الآن</button></div>`}`;
+ return `<div class="pad"><div class="h1">طلباتي</div></div>${mine.length?mine.map(o=>{const l=statusLabel(o.status);return `<div class="card" style="margin:0 18px 10px;padding:14px;cursor:pointer" data-open="${o.id}"><div class="row sb"><b style="color:var(--v)">${esc(rest(o.restaurant_id).name)}</b><span class="badge ${l[1]}">${l[0]}</span></div><div class="mu">#${o.id} · ${new Date(o.created_at).toLocaleString('ar-SA',{dateStyle:'medium',timeStyle:'short'})} · <span class="num">${fmt(o.total)} ${CUR}</span></div></div>`}).join(''):`<div class="empty"><div class="ic">${I("receipt_long")}</div>لا توجد طلبات بعد<br><button class="btn p" style="margin:16px auto 0" data-home>اطلب الآن</button></div>`}`;
 }
 function cAccount(){
- if(!G.session)return `<div class="pad"><div class="h1">حسابي</div></div><div class="empty"><div class="ic">👤</div>لم تسجّل الدخول بعد<br><button class="btn p" style="margin:16px auto 0" data-login>تسجيل الدخول</button></div>`;
+ if(!G.session)return `<div class="pad"><div class="h1">حسابي</div></div><div class="empty"><div class="ic">${I("person")}</div>لم تسجّل الدخول بعد<br><button class="btn p" style="margin:16px auto 0" data-login>تسجيل الدخول</button></div>`;
  const p=G.profile||{};
  return `<div class="pad"><div class="h1">حسابي</div></div><div class="pad" style="padding-top:0">
  <div class="card" style="padding:16px"><b style="font-size:17px">${esc(p.name||'—')}</b><div class="mu ltr" style="text-align:right">${esc(G.session.user.email)}</div><div class="row sb" style="margin-top:10px"><span>رصيد المحفظة</span><b class="num" style="color:var(--g)">${fmt(p.wallet)} ${CUR}</b></div></div>
@@ -444,7 +453,7 @@ async function authSubmit(e){
 /* ================= RESTAURANT ================= */
 function ago(t){const m=Math.max(0,Math.round((Date.now()-new Date(t))/60000));return m<1?'الآن':m<60?`منذ ${m} د`:`منذ ${Math.floor(m/60)} س`}
 const isToday=t=>new Date(t).toDateString()===new Date().toDateString();
-function oc(o,act,isNew){return `<div class="oc ${isNew?'new':''}"><div class="row sb"><b style="color:var(--v)">#${o.id}</b><span class="mu">${ago(o.created_at)}</span></div><div class="it">${o.items.map(i=>i.q+'× '+esc(i.name)).join('<br>')}</div>${o.note?`<div class="mu">📝 ${esc(o.note)}</div>`:''}<div class="row sb"><span class="mu">${esc(o.customer_name)} · ${{cash:'نقدًا',card:'بطاقة',wallet:'محفظة'}[o.pay_method]}</span><b class="num" style="color:var(--v)">${fmt(o.total)}</b></div>${act}</div>`}
+function oc(o,act,isNew){return `<div class="oc ${isNew?'new':''}"><div class="row sb"><b style="color:var(--v)">#${o.id}</b><span class="mu">${ago(o.created_at)}</span></div><div class="it">${o.items.map(i=>i.q+'× '+esc(i.name)).join('<br>')}</div>${o.note?`<div class="mu">ملاحظة: ${esc(o.note)}</div>`:''}<div class="row sb"><span class="mu">${esc(o.customer_name)} · ${{cash:'نقدًا',card:'بطاقة',wallet:'محفظة'}[o.pay_method]}</span><b class="num" style="color:var(--v)">${fmt(o.total)}</b></div>${act}</div>`}
 function shell(title,sub,tabs,cur,attr,body,extra=''){
  return `<div class="desk"><aside class="side"><div class="who">${title}<small>${sub}</small></div>${tabs.map(x=>`<button class="${cur===x[0]?'on':''}" ${attr}="${x[0]}"><span>${x[1]}</span>${x[2]?`<span class="cnt">${x[2]}</span>`:''}</button>`).join('')}<button class="out" data-logout>تسجيل الخروج</button></aside>
  <nav class="topm">${tabs.map(x=>`<button class="${cur===x[0]?'on':''}" ${attr}="${x[0]}">${x[1]}${x[2]?' ('+x[2]+')':''}</button>`).join('')}<button data-logout>خروج</button></nav>
@@ -459,11 +468,11 @@ function renderRestaurant(){
  if(T==='orders')body=`<div class="row sb" style="margin-bottom:14px;flex-wrap:wrap"><div class="h1">الطلبات</div><div class="row"><span class="mu">${r.open?'مفتوح لاستقبال الطلبات':'مغلق — لا تصلك طلبات'}</span><button class="switch ${r.open?'on':''}" data-ropen aria-label="فتح/إغلاق"></button></div></div>
  <div class="kpis"><div class="kpi"><small>طلبات اليوم</small><b class="num">${today.length}</b></div><div class="kpi"><small>مبيعات اليوم</small><b class="num">${fmt(sales)}</b></div><div class="kpi"><small>قيد التنفيذ</small><b class="num">${nw.length+pr.length+rd.length}</b></div><div class="kpi"><small>تقييم العملاء</small><b class="num">★ ${avg}</b></div></div>
  <div class="lanes">
-  <div class="lane"><h4>جديد <span class="badge b-o">${nw.length}</span></h4>${nw.map(o=>oc(o,`<button class="btn p w100" style="padding:9px;font-size:14px;margin-top:8px" data-rmodal="${o.id}">مراجعة وقبول</button>`,true)).join('')||'<div class="mu" style="text-align:center;padding:30px 0">لا طلبات جديدة<br>ستصلك هنا فورًا مع تنبيه صوتي 🔔</div>'}</div>
+  <div class="lane"><h4>جديد <span class="badge b-o">${nw.length}</span></h4>${nw.map(o=>oc(o,`<button class="btn p w100" style="padding:9px;font-size:14px;margin-top:8px" data-rmodal="${o.id}">مراجعة وقبول</button>`,true)).join('')||'<div class="mu" style="text-align:center;padding:30px 0">لا طلبات جديدة<br>ستصلك هنا فورًا مع تنبيه صوتي</div>'}</div>
   <div class="lane"><h4>قيد التجهيز <span class="badge b-y">${pr.length}</span></h4>${pr.map(o=>oc(o,`<button class="btn g w100" style="padding:9px;font-size:14px;margin-top:8px" data-ract="ready" data-id="${o.id}">جاهز للاستلام ✓</button>`)).join('')}</div>
-  <div class="lane"><h4>جاهز للاستلام <span class="badge b-g">${rd.length}</span></h4>${rd.map(o=>oc(o,`<div class="mu" style="margin-top:6px">${o.driver_id?'🛵 مندوب في الطريق للمطعم':'بانتظار مندوب…'}</div>`)).join('')}</div>
+  <div class="lane"><h4>جاهز للاستلام <span class="badge b-g">${rd.length}</span></h4>${rd.map(o=>oc(o,`<div class="mu" style="margin-top:6px">${o.driver_id?'مندوب في الطريق للمطعم':'بانتظار مندوب…'}</div>`)).join('')}</div>
  </div>`;
- if(T==='menu')body=`<div class="h1" style="margin-bottom:14px">المنيو</div><div class="tblw"><table class="tbl"><tr><th>الصنف</th><th>القسم</th><th>السعر (${CUR})</th><th>متاح</th></tr>${menuOf(r.id).map(m=>`<tr><td>${esc(m.emoji)} ${esc(m.name)}</td><td class="mu">${esc(m.section)}</td><td><input class="inp num" value="${m.price}" data-mprice="${m.id}" inputmode="decimal"></td><td><button class="switch ${m.available?'on':''}" data-mav="${m.id}"></button></td></tr>`).join('')}</table></div><p class="mu" style="margin-top:10px">إيقاف صنف يخفيه من تطبيق العميل فورًا (مثلًا عند نفاد الكمية). تعديل السعر يُطبَّق على الطلبات الجديدة.</p>`;
+ if(T==='menu')body=`<div class="h1" style="margin-bottom:14px">المنيو</div><div class="tblw"><table class="tbl"><tr><th>الصنف</th><th>القسم</th><th>السعر (${CUR})</th><th>متاح</th></tr>${menuOf(r.id).map(m=>`<tr><td>${esc(m.name)}</td><td class="mu">${esc(m.section)}</td><td><input class="inp num" value="${m.price}" data-mprice="${m.id}" inputmode="decimal"></td><td><button class="switch ${m.available?'on':''}" data-mav="${m.id}"></button></td></tr>`).join('')}</table></div><p class="mu" style="margin-top:10px">إيقاف صنف يخفيه من تطبيق العميل فورًا (مثلًا عند نفاد الكمية). تعديل السعر يُطبَّق على الطلبات الجديدة.</p>`;
  if(T==='reports'){const days=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));return d});const vals=days.map(d=>os.filter(o=>o.status==='delivered'&&new Date(o.created_at).toDateString()===d.toDateString()).reduce((a,o)=>a+ +o.subtotal,0));const tot=vals.reduce((a,b)=>a+b,0),mx=Math.max(1,...vals);
   const comm=os.filter(o=>o.status==='delivered'&&days.some(d=>new Date(o.created_at).toDateString()===d.toDateString())).reduce((a,o)=>a+o.subtotal*o.commission_pct/100,0);
   body=`<div class="h1" style="margin-bottom:14px">التقارير والمستحقات — آخر 7 أيام</div><div class="kpis"><div class="kpi"><small>المبيعات المسلّمة</small><b class="num">${fmt(tot)}</b></div><div class="kpi"><small>عمولة المنصة (${r.commission}٪)</small><b class="num">${fmt(comm)}</b></div><div class="kpi"><small>صافي مستحقاتك</small><b class="num" style="color:var(--g)">${fmt(tot-comm)}</b></div><div class="kpi"><small>عدد الطلبات</small><b class="num">${os.filter(o=>o.status==='delivered').length}</b></div></div>
@@ -474,7 +483,7 @@ function renderRestaurant(){
   <b style="color:var(--v)">وقت التجهيز</b><div class="pt">${[10,15,20,30].map(p=>`<button class="${ST.prep===p?'on':''}" data-prep="${p}">${p} د</button>`).join('')}</div>
   <div class="row" style="gap:10px;margin-top:6px"><button class="btn p" style="flex:2" data-ract="accept" data-id="${m.id}">قبول الطلب</button><button class="btn d" style="flex:1" data-ract="reject" data-id="${m.id}">رفض</button></div>
   <button class="mu w100" style="margin-top:10px" data-rclose>لاحقًا</button></div></div>`:'';
- return shell(esc(r.emoji)+' '+esc(r.name),'لوحة المطعم',[['orders','الطلبات',nw.length],['menu','المنيو',0],['reports','التقارير',0]],T,'data-rtab',body,modal);
+ return shell(esc(r.name),'لوحة المطعم',[['orders','الطلبات',nw.length],['menu','المنيو',0],['reports','التقارير',0]],T,'data-rtab',body,modal);
 }
 async function restClick(e){
  const t=e.target.closest('button,[data-rclose-bg]');if(!t)return;const d=t.dataset;
@@ -505,11 +514,11 @@ function renderDriver(){
   ${stage===1?`<button class="btn p w100" data-dact="depart">ابدأ التوصيل للعميل</button>`:''}
   ${stage===2?`<button class="btn p w100" data-dact="arrive">وصلت للعميل</button>`:''}
   ${stage===3?`<b style="color:var(--v)">أدخل كود التسليم من العميل</b><div class="otp" style="margin:12px 0">${[0,1,2,3].map(i=>`<input maxlength="1" inputmode="numeric" data-dotp="${i}" aria-label="رقم ${i+1}">`).join('')}</div>${ST.dErr?`<div class="err">${esc(ST.dErr)}</div>`:''}<button class="btn g w100" style="margin-top:10px" data-dact="deliver">تأكيد التسليم</button>`:''}</div>`;
- } else if(!ST.online)b=`<div class="empty"><div class="ic">😴</div>أنت غير متصل<br>اتصل لتبدأ استقبال الطلبات</div>`;
+ } else if(!ST.online)b=`<div class="empty"><div class="ic">${I("bedtime")}</div>أنت غير متصل<br>اتصل لتبدأ استقبال الطلبات</div>`;
  else if(offers.length)b=offers.map(o=>{const r=rest(o.restaurant_id);return `<div class="offer"><div class="row sb"><b style="color:var(--o);font-size:17px">طلب توصيل #${o.id}</b><span class="badge b-g">+${fmt(Math.round(12+o.total*.05))} ${CUR}</span></div>
   <div class="route"><div><b>${esc(r.name)}</b><div class="mu">${o.status==='ready'?'جاهز للاستلام':'يُجهَّز الآن'}</div></div><div><b>${esc(o.address||'—')}</b><div class="mu">${o.items.length} أصناف · ${o.pay_method==='cash'?'نقدًا':'مدفوع'}</div></div></div>
   <button class="btn p w100" data-dtake="${o.id}">قبول</button></div>`}).join('');
- else b=`<div class="empty"><div class="ic">📡</div>بانتظار طلبات قريبة منك…<br><span class="mu">سيصلك تنبيه فور وجود طلب</span></div>`;
+ else b=`<div class="empty"><div class="ic">${I("radar")}</div>بانتظار طلبات قريبة منك…<br><span class="mu">سيصلك تنبيه فور وجود طلب</span></div>`;
  return `<div class="mob"><div class="view"><div class="d-head"><div class="row sb"><span style="font-size:13px;opacity:.85">أرباح اليوم</span><div class="row"><span style="font-size:13px">${ST.online?'متصل':'غير متصل'}</span><button class="switch ${ST.online?'on':''}" data-donline aria-label="اتصال"></button></div></div><b class="big num">${fmt(Math.round(G.stats.earn||0))} ${CUR}</b><div class="row sb"><span style="font-size:13px;opacity:.85" class="num">${G.stats.trips||0} توصيلات اليوم</span><button style="font-size:13px;color:#C9BFE0" data-logout>خروج</button></div></div>${b}</div></div>`;
 }
 async function drvClick(e){
@@ -520,7 +529,7 @@ async function drvClick(e){
  if(d.dact){const job=G.orders.find(o=>o.driver_id===G.session.user.id&&['preparing','ready','picked'].includes(o.status));let arg=null;
   if(d.dact==='deliver'){arg=[...document.querySelectorAll('[data-dotp]')].map(i=>i.value).join('');if(arg.length<4){ST.dErr='أدخل الكود كاملًا';render();return}}
   t.disabled=true;const {error}=await sb.rpc('dl_order_action',{p_id:job.id,p_action:d.dact,p_arg:arg});
-  if(error){ST.dErr=d.dact==='deliver'?errMsg(error):'';if(d.dact!=='deliver')toast(errMsg(error),1)}else{ST.dErr='';if(d.dact==='deliver')toast('تم التسليم 🎉')}
+  if(error){ST.dErr=d.dact==='deliver'?errMsg(error):'';if(d.dact!=='deliver')toast(errMsg(error),1)}else{ST.dErr='';if(d.dact==='deliver')toast('تم التسليم بنجاح')}
   await loadOrders();render();return}
 }
 
@@ -536,9 +545,9 @@ function renderAdmin(){
   body=`<div class="h1" style="margin-bottom:14px">نظرة عامة — اليوم</div>
  <div class="kpis"><div class="kpi"><small>طلبات اليوم</small><b class="num">${today.length}</b></div><div class="kpi"><small>قيمة المبيعات</small><b class="num">${fmt(gmv)}</b></div><div class="kpi"><small>عمولة المنصة (المسلّم)</small><b class="num" style="color:var(--g)">${fmt(comm)}</b></div><div class="kpi"><small>طلبات نشطة الآن</small><b class="num" style="color:var(--o)">${live.length}</b></div></div>
  <div class="grid2"><div class="card" style="padding:16px"><b style="color:var(--v)">الطلبات حسب الحالة</b>${by.map(([s,n])=>`<div style="margin-top:10px"><div class="row sb"><span>${statusLabel(s)[0]}</span><b class="num">${n}</b></div><div class="hbar"><i style="width:${n/mx*100}%"></i></div></div>`).join('')}</div>
- <div class="card" style="padding:16px"><b style="color:var(--v)">أداء المطاعم اليوم</b>${perR.map(([r,l])=>`<div class="row sb" style="padding:10px 0;border-bottom:1px solid var(--ln)"><span>${esc(r.emoji)} ${esc(r.name)}</span><span class="mu num">${l.length} طلب · ${fmt(l.reduce((a,o)=>a+ +o.subtotal,0))} ${CUR}</span></div>`).join('')}</div></div>`}
+ <div class="card" style="padding:16px"><b style="color:var(--v)">أداء المطاعم اليوم</b>${perR.map(([r,l])=>`<div class="row sb" style="padding:10px 0;border-bottom:1px solid var(--ln)"><span>${esc(r.name)}</span><span class="mu num">${l.length} طلب · ${fmt(l.reduce((a,o)=>a+ +o.subtotal,0))} ${CUR}</span></div>`).join('')}</div></div>`}
  if(T==='orders')body=`<div class="h1" style="margin-bottom:14px">كل الطلبات</div>${os.length?`<div class="tblw"><table class="tbl"><tr><th>#</th><th>الوقت</th><th>المطعم</th><th>العميل</th><th>الدفع</th><th>الإجمالي</th><th>الحالة</th></tr>${os.map(o=>{const l=statusLabel(o.status);return `<tr><td class="num">${o.id}</td><td class="mu">${ago(o.created_at)}</td><td>${esc(rest(o.restaurant_id).name)}</td><td>${esc(o.customer_name)}</td><td>${{cash:'نقدًا',card:'بطاقة',wallet:'محفظة'}[o.pay_method]}</td><td class="num">${fmt(o.total)}</td><td><span class="badge ${l[1]}">${l[0]}</span></td></tr>`}).join('')}</table></div>`:'<div class="empty">لا توجد طلبات بعد</div>'}`;
- if(T==='rests')body=`<div class="h1" style="margin-bottom:14px">المطاعم والعمولات</div><div class="tblw"><table class="tbl"><tr><th>المطعم</th><th>الحالة</th><th>التقييم</th><th>العمولة ٪</th></tr>${G.rests.map(r=>`<tr><td>${esc(r.emoji)} ${esc(r.name)}</td><td><span class="badge ${r.open?'b-g':'b-r'}">${r.open?'مفتوح':'مغلق'}</span></td><td class="num">★ ${r.rating}</td><td><input class="inp num" value="${r.commission}" data-comm="${r.id}" inputmode="decimal"></td></tr>`).join('')}</table></div><p class="mu" style="margin-top:10px">العمولة الجديدة تُطبَّق على الطلبات القادمة، وتظهر في تقارير المطعم.</p>`;
+ if(T==='rests')body=`<div class="h1" style="margin-bottom:14px">المطاعم والعمولات</div><div class="tblw"><table class="tbl"><tr><th>المطعم</th><th>الحالة</th><th>التقييم</th><th>العمولة ٪</th></tr>${G.rests.map(r=>`<tr><td>${esc(r.name)}</td><td><span class="badge ${r.open?'b-g':'b-r'}">${r.open?'مفتوح':'مغلق'}</span></td><td class="num">★ ${r.rating}</td><td><input class="inp num" value="${r.commission}" data-comm="${r.id}" inputmode="decimal"></td></tr>`).join('')}</table></div><p class="mu" style="margin-top:10px">العمولة الجديدة تُطبَّق على الطلبات القادمة، وتظهر في تقارير المطعم.</p>`;
  if(T==='zones')body=`<div class="h1" style="margin-bottom:14px">مناطق التوصيل والرسوم</div><div class="tblw"><table class="tbl"><tr><th>المنطقة</th><th>رسوم التوصيل (${CUR})</th><th>مفعّلة</th></tr>${G.zones.map(z=>`<tr><td>${esc(z.name)}</td><td><input class="inp num" value="${z.fee}" data-zfee="${z.id}" inputmode="decimal"></td><td><button class="switch ${z.active?'on':''}" data-zon="${z.id}"></button></td></tr>`).join('')}</table></div><p class="mu" style="margin-top:10px">المنطقة المعطّلة لا تظهر للعملاء عند الطلب.</p>`;
  if(T==='coupons')body=`<div class="h1" style="margin-bottom:14px">الكوبونات</div><div class="tblw"><table class="tbl"><tr><th>الكود</th><th>الوصف</th><th>الاستخدام</th><th>مفعّل</th></tr>${G.coupons.map(c=>`<tr><td><b>${esc(c.code)}</b></td><td class="mu">${esc(c.label)} · حد أقصى ${fmt(c.max_off)} ${CUR}</td><td class="num">${c.used}</td><td><button class="switch ${c.active?'on':''}" data-con="${esc(c.code)}"></button></td></tr>`).join('')}</table></div>`;
  return shell('منصتك','لوحة الإدارة',[['dash','نظرة عامة',0],['orders','الطلبات',live.length],['rests','المطاعم والعمولات',0],['zones','مناطق التوصيل',0],['coupons','الكوبونات',0]],T,'data-atab',body);
@@ -586,7 +595,7 @@ async function onSession(session){
  render();
 }
 (async()=>{
- try{await loadCatalog();G.loaded=true}catch(e){document.getElementById('app').innerHTML='<div class="empty"><div class="ic">📡</div>تعذّر الاتصال بالخادم<br><button class="btn p" style="margin:14px auto" onclick="location.reload()">أعد المحاولة</button></div>';return}
+ try{await loadCatalog();G.loaded=true}catch(e){document.getElementById('app').innerHTML='<div class="empty">تعذّر الاتصال بالخادم<br><button class="btn p" style="margin:14px auto" onclick="location.reload()">أعد المحاولة</button></div>';return}
  if(C.cart.rid&&!G.rests.some(r=>r.id===C.cart.rid))C.cart={rid:null,lines:[]};
  const {data}=await sb.auth.getSession();await onSession(data.session);
  sb.auth.onAuthStateChange((ev,s)=>{if(ev==='SIGNED_IN'&&G.session?.user.id===s?.user.id)return;if(ev==='TOKEN_REFRESHED'){G.session=s;return}if(ev==='SIGNED_IN'||ev==='SIGNED_OUT')setTimeout(()=>onSession(s),0)});
