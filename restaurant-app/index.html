@@ -369,7 +369,7 @@ function cHome(){
  const tick=['توصيل خلال '+esc(r.eta||'25')+' دقيقة','خصم 30٪ على أول طلب','لحم طازج يوميًا','صوص البيت السري'];
  return `<section class="bhero" style="--img:url('${esc(r.image_url||'img/hero.jpg')}')"><div class="bimg" style="background-image:url('${esc(r.image_url||'img/hero.jpg')}')"></div>
   <div class="bh-top"><div class="blogo">${esc(brandName().trim()[0]||'ب')}</div><b>${esc(brandName())}</b><select data-zone class="bzone" aria-label="منطقة التوصيل">${G.zones.filter(x=>x.active).map(x=>`<option value="${x.id}" ${x.id===z.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select></div>
-  <div class="bh-copy"><span class="bh-kick"><i></i>${r.open?'مفتوح الآن':'مغلق الآن'} · ${esc(r.eta)} دقيقة</span>
+  <div class="bh-copy">
   <h1 class="bh-title"><span>جوعان؟</span><span><mark>إحنا جاهزين</mark></span></h1>
   <p>${esc(BR.tag||'برجر سماش على الصاج لحظة طلبك، يوصلك سخن.')}</p>
   <button class="bh-cta" data-scrollmenu>اطلب الآن <span class="arr">←</span></button></div></section>
@@ -380,7 +380,7 @@ function cHome(){
  <div class="offers">${offers.map(o=>`<div class="ofc ${o[1]}" data-item="${o[0].id}"><img src="${esc(o[0].image_url||'')}" alt="" loading="lazy"><div class="oc-in"><span class="oc-tag">${o[2]}</span><b>${o[3]}</b><small>${o[4]}</small><span class="oc-p">${fmt(o[0].price)} <em>${CUR}</em></span></div></div>`).join('')}</div>
  <nav class="btabs" id="btabs">${secs.map((s,i)=>`<button class="${(C.sec||secs[0])===s?'on':''}" data-sec="${esc(s)}">${esc(s)}</button>`).join('')}</nav>
  ${secs.map(s=>`<section class="msec" data-secname="${esc(s)}"><h3 class="sect">${esc(s)}</h3><div class="mgrid">${items.filter(m=>m.section===s).map(card).join('')}</div></section>`).join('')}
- <div class="credit">نموذج تجريبي · الصور من Freepik</div>
+ <div class="credit"></div>
  ${cartCount()&&C.cart.rid===SINGLE?`<div class="cfab ${C.bump?'bump':''}" data-go="cart"><span class="cnt">${cartCount()}</span><b>عرض السلة</b><span class="tot num">${fmt(cartSub())} ${CUR}</span></div>`:''}`;
 }
 function cHomeMarket(){
@@ -529,7 +529,11 @@ function reveal(){
  rvObs=rvObs||new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');SEEN.add(en.target.dataset.rv);rvObs.unobserve(en.target)}}),{threshold:.12});
  document.querySelectorAll('.rv').forEach(e=>{if(SEEN.has(e.dataset.rv))e.classList.add('seen');else rvObs.observe(e)});
 }
-addEventListener('scroll',()=>{const h=document.querySelector('.bhero');if(h&&scrollY<700)h.style.setProperty('--sy',scrollY+'px')},{passive:true});
+addEventListener('scroll',()=>{const h=document.querySelector('.bhero');if(h&&scrollY<700)h.style.setProperty('--sy',scrollY+'px');
+ const secs=[...document.querySelectorAll('.msec')];if(!secs.length)return;let cur=secs[0].dataset.secname;
+ for(const s of secs){if(s.getBoundingClientRect().top<120)cur=s.dataset.secname}
+ if(cur!==C.sec){C.sec=cur;document.querySelectorAll('#btabs button').forEach(b=>{const on=b.dataset.sec===cur;b.classList.toggle('on',on);if(on)b.scrollIntoView({inline:'center',block:'nearest'})})}
+},{passive:true});
 function addLine(m,size,add,q,note){
  if(C.cart.rid&&C.cart.rid!==m.restaurant_id&&C.cart.lines.length){C.cart={rid:null,lines:[]};C.coupon=null;toast('بدأنا سلة جديدة من '+rest(m.restaurant_id).name)}
  C.cart.rid=m.restaurant_id;
