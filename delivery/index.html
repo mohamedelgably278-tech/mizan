@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FF4900">
+<title>منصتك — توصيل الطعام</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--v:#301A5B;--vl:#EEE9F7;--o:#FF4900;--ol:#FFF1E8;--y:#FFCC33;--yl:#FFF6D9;--g:#1D6B43;--gl:#E3F4EA;--r:#AC0019;--rl:#FCE8EB;--bg:#F6F3F9;--ink:#262626;--mu:#6B6375;--ln:#ECE6F1;--sh:0 8px 24px rgba(48,26,91,.08);--sh2:0 20px 50px rgba(48,26,91,.18)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.55;-webkit-tap-highlight-color:transparent}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select{font:inherit}
+.num{font-variant-numeric:tabular-nums}
+/* mobile shell */
+.mob{max-width:460px;margin:0 auto;min-height:100%;background:#fff;position:relative;display:flex;flex-direction:column;box-shadow:0 0 0 1px var(--ln)}
+@media(min-width:700px){body.m{padding:24px 0}body.m .mob{min-height:calc(100vh - 48px);border-radius:28px;overflow:hidden;box-shadow:var(--sh2)}}
+.view{flex:1;padding-bottom:84px}
+.tabbar{position:sticky;bottom:0;display:flex;border-top:1px solid var(--ln);padding:6px 6px calc(10px + env(safe-area-inset-bottom));background:#fff;z-index:5}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:0;font-size:12px;color:var(--mu);font-weight:700;position:relative}
+.tabbar button svg{width:23px;height:23px}
+.tabbar button.on{color:var(--o)}
+.tabbar .dotn{position:absolute;top:0;margin-right:22px;width:9px;height:9px;border-radius:50%;background:var(--o)}
+.pad{padding:16px 18px}
+.row{display:flex;align-items:center;gap:10px}.sb{justify-content:space-between}
+.h1{font-size:23px;font-weight:800;color:var(--v);line-height:1.35}
+.h2{font-size:18px;font-weight:800;color:var(--v)}
+.mu{color:var(--mu);font-size:13px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:14px;padding:13px 18px;font-weight:800;font-size:16px;transition:transform .12s,filter .12s}
+.btn:active{transform:scale(.97)}
+.btn.p{background:var(--o);color:#fff}.btn.s{background:var(--vl);color:var(--v)}.btn.g{background:var(--gl);color:var(--g)}.btn.d{background:var(--rl);color:var(--r)}.btn.y{background:var(--y);color:var(--v)}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.w100{width:100%}
+.chip{flex:none;padding:6px 14px;border-radius:999px;background:var(--bg);font-size:13px;font-weight:700;color:var(--v);border:1.5px solid transparent}
+.chip.on{background:var(--ol);color:var(--o);border-color:var(--o)}
+.badge{font-size:12px;font-weight:800;padding:2px 10px;border-radius:999px;display:inline-block;white-space:nowrap}
+.b-o{background:var(--ol);color:var(--o)}.b-g{background:var(--gl);color:var(--g)}.b-v{background:var(--vl);color:var(--v)}.b-y{background:var(--yl);color:#946100}.b-r{background:var(--rl);color:var(--r)}
+.card{background:#fff;border:1px solid var(--ln);border-radius:20px}
+.stickyb{position:fixed;bottom:0;left:0;right:0;max-width:460px;margin:0 auto;padding:12px 18px calc(14px + env(safe-area-inset-bottom));background:linear-gradient(transparent,#fff 30%);z-index:6}
+@media(min-width:700px){body.m .stickyb{bottom:24px;border-radius:0 0 28px 28px}}
+.back{width:40px;height:40px;border-radius:12px;background:#fff;display:grid;place-items:center;box-shadow:var(--sh);font-size:18px;flex:none}
+.empty{text-align:center;padding:50px 24px;color:var(--mu)}.empty .ic{font-size:46px;margin-bottom:8px}
+.c-head{background:var(--o);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 18px;border-radius:0 0 26px 26px}
+.addr{font-size:12px;opacity:.9}.addr b{display:block;font-size:16px;opacity:1}
+.addr select{background:transparent;color:#fff;border:0;font-weight:800;font-size:16px;outline:0;max-width:240px}
+.addr select option{color:var(--ink)}
+.search{margin-top:12px;background:#fff;border-radius:14px;padding:10px 14px;display:flex;gap:8px;align-items:center;color:var(--mu)}
+.search input{border:0;outline:0;flex:1;background:none;color:var(--ink)}
+.promo{margin:16px 18px 4px;border-radius:20px;background:var(--v);color:#fff;padding:16px 18px;position:relative;overflow:hidden}
+.promo b{font-size:20px;color:var(--y);display:block;font-weight:800}
+.promo:after{content:"";position:absolute;left:-30px;bottom:-40px;width:130px;height:130px;border-radius:50%;background:var(--o);opacity:.5}
+.cats{display:flex;gap:8px;overflow-x:auto;padding:14px 18px 4px;scrollbar-width:none}
+.rest{margin:12px 18px;border-radius:20px;overflow:hidden;border:1px solid var(--ln);background:#fff;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.rest:hover{transform:translateY(-2px);box-shadow:var(--sh)}
+.rest .img{height:118px;display:grid;place-items:center;font-size:50px;position:relative}
+.rest .img .tag{position:absolute;top:10px;right:10px}
+.rest .in{padding:10px 14px}
+.rest.closed{opacity:.6}
+.reorder{display:flex;gap:10px;overflow-x:auto;padding:4px 18px;scrollbar-width:none}
+.reorder button{flex:none;width:160px;text-align:right;background:var(--bg);border-radius:14px;padding:10px 12px}
+.r-cover{height:160px;display:grid;place-items:center;font-size:68px;position:relative}
+.r-cover .back{position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px}
+.mtabs{display:flex;gap:6px;overflow-x:auto;padding:10px 18px;position:sticky;top:0;background:#fff;z-index:3;border-bottom:1px solid var(--ln);scrollbar-width:none}
+.item{display:flex;gap:12px;padding:14px 18px;border-bottom:1px solid var(--ln);cursor:pointer}
+.item .th{width:88px;height:88px;border-radius:16px;flex:none;display:grid;place-items:center;font-size:38px;position:relative;background:var(--bg)}
+.item .add{position:absolute;bottom:-8px;left:-8px;width:34px;height:34px;border-radius:11px;background:#fff;box-shadow:var(--sh);color:var(--o);font-size:21px;font-weight:800;display:grid;place-items:center}
+.item .q{position:absolute;bottom:-8px;left:-8px;min-width:34px;height:34px;padding:0 8px;border-radius:11px;background:var(--o);color:#fff;font-weight:800;display:grid;place-items:center}
+.sheet-bg{position:fixed;inset:0;background:rgba(30,18,56,.45);z-index:20;display:flex;align-items:flex-end;justify-content:center;animation:fade .2s}
+.sheet{background:#fff;width:100%;max-width:460px;border-radius:26px 26px 0 0;max-height:90%;overflow-y:auto;animation:up .25s cubic-bezier(.2,.8,.2,1);padding-bottom:env(safe-area-inset-bottom)}
+@keyframes up{from{transform:translateY(40px);opacity:.5}}@keyframes fade{from{opacity:0}}
+.opt{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--ln);cursor:pointer}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid #CFC6DA;display:inline-block;vertical-align:middle;margin-inline-end:8px}
+.radio.on{border:6px solid var(--o)}
+.check{width:20px;height:20px;border-radius:6px;border:2px solid #CFC6DA;display:inline-grid;place-items:center;vertical-align:middle;margin-inline-end:8px;font-size:12px;color:#fff}
+.check.on{background:var(--o);border-color:var(--o)}
+.stepper{display:flex;align-items:center;gap:12px;background:var(--bg);border-radius:12px;padding:6px 10px}
+.stepper button{width:30px;height:30px;border-radius:9px;background:#fff;font-weight:800;color:var(--o)}
+.line{display:flex;justify-content:space-between;padding:5px 0;font-size:14px;gap:10px}
+.line.t{font-weight:800;font-size:16px;color:var(--v);border-top:1px dashed var(--ln);margin-top:6px;padding-top:12px}
+.err{background:var(--rl);color:var(--r);border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;margin-top:10px}
+.ok{background:var(--gl);color:var(--g);border-radius:12px;padding:10px 12px;font-size:13px;font-weight:700;margin-top:10px}
+.field{border:1.5px solid var(--ln);border-radius:12px;padding:10px 14px;display:flex;gap:8px;align-items:center;background:#fff}
+.field input,.field select{border:0;outline:0;flex:1;background:none;min-width:0}
+.field:focus-within{border-color:var(--v)}
+.lbl{font-size:13px;font-weight:700;color:var(--v);margin:12px 0 6px;display:block}
+.ltr{direction:ltr;text-align:left}
+.otp{display:flex;gap:10px;justify-content:center;direction:ltr}
+.otp input{width:56px;height:60px;text-align:center;font-size:24px;font-weight:800;border:1.5px solid var(--ln);border-radius:14px;outline:0}
+.otp input:focus{border-color:var(--o)}
+.pm{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1.5px solid var(--ln);border-radius:14px;margin-bottom:10px;cursor:pointer}
+.pm.on{border-color:var(--o);background:var(--ol)}
+.map{height:280px;background:#EEF1E9;position:relative;overflow:hidden}
+.map .rd{position:absolute;background:#fff;border-radius:8px}
+.pin{position:absolute;width:34px;height:34px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 4px 10px rgba(0,0,0,.2)}
+.pin:after{content:"";position:absolute;inset:10px;border-radius:50%;background:#fff}
+.rider{position:absolute;width:42px;height:42px;border-radius:50%;background:var(--v);border:4px solid var(--y);transition:all 1.2s linear;box-shadow:0 6px 14px rgba(48,26,91,.4)}
+.track{display:flex;justify-content:space-between;margin:14px 0;position:relative}
+.track:before{content:"";position:absolute;top:13px;right:24px;left:24px;height:3px;background:var(--ln)}
+.track .bar{position:absolute;top:13px;right:24px;height:3px;background:var(--o);transition:width .6s}
+.track div.s{position:relative;text-align:center;font-size:11px;font-weight:700;color:var(--mu);width:62px}
+.track div.s i{width:28px;height:28px;border-radius:50%;background:#fff;border:3px solid var(--ln);display:grid;place-items:center;margin:0 auto 4px;font-style:normal;font-size:12px}
+.track div.s.done i{background:var(--o);border-color:var(--o);color:#fff}.track div.s.done{color:var(--v)}
+.stars{display:flex;gap:6px;direction:ltr;justify-content:flex-end}
+.stars button{font-size:30px;color:#DDD5E6}.stars button.on{color:var(--y)}
+.toast{position:fixed;top:calc(16px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:var(--v);color:#fff;padding:10px 18px;border-radius:12px;font-size:14px;font-weight:700;z-index:90;max-width:90vw;animation:fade .2s;box-shadow:var(--sh2)}
+.toast.e{background:var(--r)}
+.spin{width:28px;height:28px;border-radius:50%;border:3px solid var(--ln);border-top-color:var(--o);animation:sp 1s linear infinite;margin:60px auto}
+@keyframes sp{to{transform:rotate(360deg)}}
+.skel{background:linear-gradient(90deg,#F2EEF6,#FAF8FC,#F2EEF6);background-size:200%;animation:sk 1.2s infinite;border-radius:20px;height:170px;margin:12px 18px}
+@keyframes sk{to{background-position:-200% 0}}
+.demo{background:var(--yl);border-radius:16px;padding:14px;margin-top:18px}
+.demo .row{flex-wrap:wrap;gap:8px;margin-top:8px}
+.tabs2{display:flex;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:6px}
+.tabs2 button{flex:1;padding:9px;border-radius:9px;font-weight:800;color:var(--mu)}
+.tabs2 button.on{background:#fff;color:var(--v);box-shadow:var(--sh)}
+/* staff desk */
+.desk{min-height:100vh;display:flex}
+.side{width:230px;background:var(--v);color:#D9D2EA;padding:18px 12px;flex:none;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh}
+.side .who{color:#fff;font-weight:800;padding:6px 10px 16px;font-size:16px}
+.side .who small{display:block;color:#B9AED2;font-weight:600;font-size:12px}
+.side button{text-align:right;padding:10px 12px;border-radius:10px;font-weight:700;font-size:14px;display:flex;justify-content:space-between;align-items:center}
+.side button.on{background:var(--y);color:var(--v)}
+.side .cnt{background:var(--o);color:#fff;border-radius:999px;font-size:11px;padding:0 8px}
+.side .out{margin-top:auto;color:#B9AED2}
+.main{flex:1;padding:24px;min-width:0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:14px 16px}
+.kpi small{color:var(--mu);font-size:12px;font-weight:700}.kpi b{display:block;font-size:26px;color:var(--v);font-weight:800}
+.lanes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.lane{background:#fff;border:1px solid var(--ln);border-radius:16px;padding:12px;min-height:440px}
+.lane h4{font-size:15px;color:var(--v);display:flex;justify-content:space-between;margin-bottom:10px;font-weight:800}
+.oc{border:1px solid var(--ln);border-radius:14px;padding:12px;margin-bottom:10px;background:#FCFAFE;animation:fade .3s}
+.oc.new{border-color:var(--o);background:#FFF8F3;box-shadow:0 0 0 3px rgba(255,73,0,.12)}
+.oc .it{font-size:13px;color:#4A4356;margin:6px 0}
+.tbl{width:100%;border-collapse:collapse;background:#fff;border-radius:16px;overflow:hidden;border:1px solid var(--ln)}
+.tbl th{text-align:right;font-size:12px;color:var(--mu);font-weight:700;padding:10px 14px;background:#FAF8FC;border-bottom:1px solid var(--ln)}
+.tbl td{padding:11px 14px;border-bottom:1px solid var(--ln);font-size:14px}
+.tbl tr:last-child td{border-bottom:0}
+.tblw{overflow-x:auto}
+.switch{width:46px;height:26px;border-radius:999px;background:#D6CDE0;position:relative;transition:.2s;flex:none}
+.switch:after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.switch.on{background:var(--g)}.switch.on:after{right:23px}
+.modal-bg{position:fixed;inset:0;background:rgba(30,18,56,.45);display:grid;place-items:center;z-index:30;animation:fade .2s;padding:16px}
+.modal{background:#fff;border-radius:22px;padding:24px;width:440px;max-width:100%;box-shadow:var(--sh2);animation:up .25s;max-height:90vh;overflow:auto}
+.pt{display:flex;gap:8px;margin:10px 0}
+.pt button{flex:1;padding:10px;border-radius:10px;background:var(--bg);font-weight:800;color:var(--v)}
+.pt button.on{background:var(--v);color:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.bars{display:flex;align-items:flex-end;gap:10px;height:160px;padding-top:10px}
+.bars div{flex:1;background:var(--vl);border-radius:6px 6px 0 0;position:relative;min-height:3px}
+.bars div.on{background:var(--o)}
+.bars div span{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:11px;color:var(--mu)}
+.bars div em{position:absolute;top:-20px;left:0;right:0;text-align:center;font-size:11px;font-style:normal;color:var(--v);font-weight:700}
+.inp{border:1.5px solid var(--ln);border-radius:10px;padding:6px 10px;width:84px;text-align:center;font-weight:800;color:var(--v)}
+.hbar{height:10px;border-radius:6px;background:var(--bg);overflow:hidden;margin-top:6px}.hbar i{display:block;height:100%;background:var(--o);border-radius:6px}
+.topm{display:none}
+/* driver */
+.d-head{background:var(--v);color:#fff;padding:calc(14px + env(safe-area-inset-top)) 18px 20px;border-radius:0 0 26px 26px}
+.d-head b.big{font-size:34px;color:var(--y);display:block;font-weight:800}
+.offer{margin:16px 18px;border-radius:20px;border:2px solid var(--o);padding:16px;background:#fff;animation:up .3s}
+.route{display:flex;flex-direction:column;gap:10px;margin:12px 0;position:relative;padding-right:22px}
+.route:before{content:"";position:absolute;right:6px;top:8px;bottom:8px;width:2px;background:var(--ln)}
+.route div{position:relative;font-size:14px}
+.route div:before{content:"";position:absolute;right:-22px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--o)}
+.route div:last-child:before{background:var(--v)}
+.dstep{display:flex;gap:6px;margin:10px 0}.dstep i{flex:1;height:5px;border-radius:4px;background:var(--ln)}.dstep i.on{background:var(--o)}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.lanes,.grid2{grid-template-columns:1fr}.side{display:none}.topm{display:flex;position:sticky;top:0;z-index:5;background:var(--v);padding:10px 12px;gap:6px;overflow-x:auto}.topm button{flex:none;color:#D9D2EA;font-weight:700;padding:8px 12px;border-radius:10px;font-size:14px}.topm button.on{background:var(--y);color:var(--v)}.desk{flex-direction:column}.main{padding:14px}}
+</style>
+</head>
+<body class="m">
+<div id="app"><div class="spin"></div></div>
+<script>
+const SB_URL='https://quicdsxjpxsoksvhwxcq.supabase.co',SB_KEY='sb_publishable_UwjFttlllFmnqbnWxYmkXw_2rpP0eFJ';
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'dl-auth'}});
+const CUR='ر.س';
+const ERR={not_authenticated:'سجّل الدخول أولًا',restaurant_closed:'المطعم مغلق الآن',item_unavailable:'أحد الأصناف لم يعد متاحًا، حدّث السلة',below_min:'الطلب أقل من الحد الأدنى',bad_coupon:'الكوبون غير صالح أو منتهي',wallet_low:'رصيد المحفظة لا يكفي',bad_state:'تغيّرت حالة الطلب، تم التحديث',taken:'أخذ مندوب آخر هذا الطلب',busy:'أكمل طلبك الحالي أولًا',not_ready:'الطلب لم يجهز بعد',bad_code:'كود التسليم غير صحيح',invalid_code:'الكود غير صحيح',forbidden:'ليست لديك صلاحية',bad_zone:'منطقة التوصيل غير متاحة',empty_cart:'السلة فارغة',bad_option:'اختيار غير صالح','Invalid login credentials':'البريد أو كلمة المرور غير صحيحة','User already registered':'هذا البريد مسجّل بالفعل، سجّل الدخول','Email not confirmed':'أكّد بريدك الإلكتروني أولًا'};
+function errMsg(e){const m=(e&&(e.message||e.error_description||e))+'';for(const k in ERR)if(m.includes(k))return ERR[k];if(/password/i.test(m))return 'كلمة المرور يجب ألا تقل عن 6 أحرف';if(/fetch|network/i.test(m))return 'تعذّر الاتصال، تحقق من الإنترنت';return 'حدث خطأ، حاول مرة أخرى'}
+const fmt=n=>(Math.round((+n||0)*100)/100).toLocaleString('en-US');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const LS={get(k,d){try{const v=localStorage.getItem('dl_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('dl_'+k,JSON.stringify(v))}catch(e){}}};
+
+/* ---------- global state ---------- */
+const G={session:null,profile:null,rests:[],menu:[],zones:[],orders:[],coupons:[],loaded:false,stats:{trips:0,earn:0}};
+const C={screen:'home',hist:[],rid:null,cart:LS.get('cart',{rid:null,lines:[]}),sheet:null,cat:'الكل',q:'',pay:'cash',coupon:null,couponErr:'',couponIn:'',orderId:null,rating:{f:0,d:0,tags:[]},sec:null,note:'',zone:LS.get('zone',null),addr:LS.get('addr',''),authTab:'in',authErr:'',authOk:'',busy:false,after:null,codeMsg:''};
+const ST={tab:'orders',modal:null,prep:15,adminTab:'dash',online:true,dErr:'',known:new Set(),first:true};
+let toastT;function toast(m,e){const el=document.getElementById('toast');if(el)el.remove();const d=document.createElement('div');d.id='toast';d.className='toast'+(e?' e':'');d.textContent=m;document.body.appendChild(d);clearTimeout(toastT);toastT=setTimeout(()=>d.remove(),2400)}
+const rest=id=>G.rests.find(r=>r.id===id)||{};
+const menuOf=id=>G.menu.filter(m=>m.restaurant_id===id);
+const zoneSel=()=>G.zones.find(z=>z.id===C.zone&&z.active)||G.zones.find(z=>z.active)||{id:null,name:'—',fee:0};
+const role=()=>G.profile?.role||'customer';
+const saveCart=()=>LS.set('cart',C.cart);
+
+/* ---------- data ---------- */
+async function loadCatalog(){
+ const [r,m,z]=await Promise.all([sb.from('dl_restaurants').select('*').order('sort'),sb.from('dl_menu_items').select('*').order('sort'),sb.from('dl_zones').select('*').order('id')]);
+ if(r.error||m.error||z.error)throw r.error||m.error||z.error;
+ G.rests=r.data;G.menu=m.data;G.zones=z.data;
+}
+async function loadOrders(){
+ if(!G.session){G.orders=[];return}
+ const {data,error}=await sb.from('dl_orders').select('*').order('created_at',{ascending:false}).limit(300);
+ if(error){console.error(error);return}
+ const rl=role();
+ if(rl==='restaurant'){const fresh=data.filter(o=>o.status==='new'&&!ST.known.has(o.id));if(!ST.first&&fresh.length){beep();toast('🔔 طلب جديد #'+fresh[0].id)}data.forEach(o=>ST.known.add(o.id));ST.first=false}
+ if(rl==='driver'){const fresh=data.filter(o=>!o.driver_id&&!ST.known.has(o.id));if(!ST.first&&fresh.length&&ST.online){beep();toast('🛵 طلب توصيل جديد')}data.forEach(o=>ST.known.add(o.id));ST.first=false;
+  const s=await sb.rpc('dl_driver_stats');if(!s.error)G.stats=s.data}
+ G.orders=data;
+ if(rl==='admin'){const c=await sb.from('dl_coupons').select('*').order('code');if(!c.error)G.coupons=c.data}
+}
+async function loadProfile(){
+ if(!G.session){G.profile=null;return}
+ const {data,error}=await sb.rpc('dl_ensure_profile',{p_name:C.pendingName||null,p_phone:C.pendingPhone||null});
+ if(!error)G.profile=data;C.pendingName=C.pendingPhone=null;
+}
+let rtCh=null,dbt=null;
+function subscribe(){
+ if(rtCh)sb.removeChannel(rtCh);
+ rtCh=sb.channel('dl-live').on('postgres_changes',{event:'*',schema:'public',table:'dl_orders'},()=>{clearTimeout(dbt);dbt=setTimeout(async()=>{await loadOrders();render()},250)})
+  .on('postgres_changes',{event:'*',schema:'public',table:'dl_restaurants'},()=>refreshCat())
+  .on('postgres_changes',{event:'*',schema:'public',table:'dl_menu_items'},()=>refreshCat()).subscribe();
+}
+let cdbt;function refreshCat(){clearTimeout(cdbt);cdbt=setTimeout(async()=>{try{await loadCatalog();render()}catch(e){}},300)}
+setInterval(async()=>{if(G.session&&document.visibilityState==='visible'){await loadOrders();render()}},20000);
+let actx;function beep(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();[0,.18].forEach(t=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.18,actx.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+t+.15);o.start(actx.currentTime+t);o.stop(actx.currentTime+t+.16)})}catch(e){}}
+
+/* ---------- icons ---------- */
+const ic={home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg>',
+ bag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8h14l-1 12H6z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>',
+ user:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg>',
+ search:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>'};
+
+/* ================= CUSTOMER ================= */
+const cartCount=()=>C.cart.lines.reduce((a,l)=>a+l.q,0);
+const cartSub=()=>C.cart.lines.reduce((a,l)=>a+l.q*l.unit,0);
+const disc=()=>C.coupon?Math.min(C.coupon.max_off,cartSub()*C.coupon.pct/100):0;
+function go(s){C.hist.push(C.screen);C.screen=s;render();scrollTo(0,0)}
+function back(){C.screen=C.hist.pop()||'home';render()}
+const myOrders=()=>G.orders.filter(o=>o.customer_id===G.session?.user.id);
+const curOrder=()=>G.orders.find(o=>o.id===C.orderId);
+
+function cHome(){
+ const cats=['الكل',...new Set(G.rests.map(r=>r.cat))];
+ const list=G.rests.filter(r=>(C.cat==='الكل'||r.cat===C.cat)&&(!C.q||r.name.includes(C.q)||menuOf(r.id).some(m=>m.name.includes(C.q))));
+ const past=myOrders().filter(o=>o.status==='delivered');const z=zoneSel();
+ const active=myOrders().find(o=>!['delivered','rejected'].includes(o.status));
+ return `<div class="c-head"><div class="row sb"><div class="addr">التوصيل إلى<br><select data-zone>${G.zones.filter(x=>x.active).map(x=>`<option value="${x.id}" ${x.id===z.id?'selected':''}>${esc(x.name)} ▾</option>`).join('')}</select></div><div class="row" style="gap:6px;font-weight:800">منصتك</div></div>
+ <label class="search">${ic.search}<input id="q" placeholder="ابحث عن مطعم أو وجبة" value="${esc(C.q)}" autocomplete="off"></label></div>
+ ${active?`<div class="card row sb" style="margin:14px 18px 0;padding:12px 14px;border-color:var(--o);cursor:pointer" data-open="${active.id}"><div><b style="color:var(--v)">طلبك #${active.id} ${statusLabel(active.status)[0]}</b><div class="mu">${esc(rest(active.restaurant_id).name)} · اضغط للمتابعة</div></div><span class="badge b-o">تتبع</span></div>`:''}
+ ${C.q?'':`<div class="promo"><b>خصم 30٪ على أول طلب</b><span style="font-size:13px">استخدم الكوبون «اهلا» عند الدفع</span></div>`}
+ <div class="cats">${cats.map(c=>`<button class="chip ${C.cat===c?'on':''}" data-cat="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+ ${past.length&&!C.q?`<div class="pad" style="padding-bottom:6px"><div class="h2">اطلب مجددًا</div></div><div class="reorder">${past.slice(0,4).map(o=>`<button data-reorder="${o.id}"><b style="color:var(--v);font-size:14px">${esc(rest(o.restaurant_id).name)}</b><div class="mu">${esc(o.items.map(i=>i.name).join('، ').slice(0,30))}</div></button>`).join('')}</div>`:''}
+ <div class="pad" style="padding-bottom:0"><div class="h2">${C.q?'نتائج البحث':'مطاعم قريبة منك'}</div></div>
+ ${!G.loaded?'<div class="skel"></div><div class="skel"></div>':list.length?list.map(r=>`<div class="rest ${r.open?'':'closed'}" data-rest="${r.id}"><div class="img" style="background:${esc(r.bg)}">${esc(r.emoji)}${r.open?(r.sort===1?'<span class="tag badge b-y">الأكثر طلبًا</span>':''):`<span class="tag badge b-r">مغلق${r.opens_at?' · يفتح '+esc(r.opens_at):''}</span>`}</div>
+  <div class="in row sb"><div><b style="color:var(--v);font-size:16px">${esc(r.name)}</b><div class="mu">${esc(r.cat)} · ${esc(r.eta)} دقيقة · توصيل ${fmt(z.fee)} ${CUR}</div></div><span class="badge b-v">★ ${r.rating}</span></div></div>`).join('')
+ :`<div class="empty"><div class="ic">🔎</div>لا توجد نتائج لـ «${esc(C.q)}»<br><button class="btn s" style="margin:14px auto 0" data-clearq>عرض كل المطاعم</button></div>`}`;
+}
+function cRest(){
+ const r=rest(C.rid),items=menuOf(r.id).filter(m=>m.available),secs=[...new Set(items.map(m=>m.section))];
+ const inCart=id=>C.cart.rid===r.id?C.cart.lines.filter(l=>l.item_id===id).reduce((a,l)=>a+l.q,0):0;
+ return `<div class="r-cover" style="background:${esc(r.bg)}"><button class="back" data-back aria-label="رجوع">→</button>${esc(r.emoji)}</div>
+ <div class="pad"><div class="row sb"><div class="h1">${esc(r.name)}</div><span class="badge b-v">★ ${r.rating} (${esc(r.rating_cnt)})</span></div>
+ <div class="mu" style="margin-top:4px">${esc(r.eta)} دقيقة · توصيل ${fmt(zoneSel().fee)} ${CUR} · الحد الأدنى ${fmt(r.min_order)} ${CUR}</div>
+ ${r.open?'':`<div class="err">المطعم مغلق الآن${r.opens_at?' ويفتح '+esc(r.opens_at):''}. تصفح المنيو واطلب لاحقًا.</div>`}</div>
+ <div class="mtabs">${secs.map(s=>`<button class="chip ${(C.sec||secs[0])===s?'on':''}" data-sec="${esc(s)}">${esc(s)}</button>`).join('')}</div>
+ ${secs.map((s,k)=>`<div id="sec-${k}" data-secname="${esc(s)}"><div class="pad" style="padding-bottom:4px"><b style="color:var(--v)">${esc(s)}</b></div>${items.filter(m=>m.section===s).map(m=>{const q=inCart(m.id);return `<div class="item" data-item="${m.id}"><div style="flex:1"><b>${esc(m.name)}</b><div class="mu">${esc(m.descr)}</div><div style="margin-top:6px;font-weight:800;color:var(--v)" class="num">${fmt(m.price)} ${CUR}${m.options?'<span class="mu" style="font-weight:600"> · خيارات</span>':''}</div></div><div class="th">${esc(m.emoji)}${r.open?(q?`<span class="q">${q}</span>`:`<span class="add" data-quick="${m.id}">+</span>`):''}</div></div>`}).join('')}</div>`).join('')}
+ ${cartCount()&&C.cart.rid===r.id?`<div class="stickyb"><button class="btn p w100" data-go="cart"><span class="badge" style="background:rgba(255,255,255,.25);color:#fff">${cartCount()}</span>عرض السلة<span style="margin-inline-start:auto" class="num">${fmt(cartSub())} ${CUR}</span></button></div>`:''}`;
+}
+function unitOf(m,sh){if(!m.options)return +m.price;return +m.price+(sh.size==null?0:+m.options.size[sh.size][1])+sh.add.reduce((a,i)=>a+ +m.options.add[i][1],0)}
+function cSheet(){
+ const m=G.menu.find(x=>x.id===C.sheet.mid),sh=C.sheet,o=m.options;
+ return `<div class="sheet-bg" data-close-sheet><div class="sheet">
+ <div style="height:150px;background:var(--bg);display:grid;place-items:center;font-size:72px">${esc(m.emoji)}</div>
+ <div class="pad"><div class="row sb"><div class="h1">${esc(m.name)}</div><b class="num" style="color:var(--v)">${fmt(m.price)} ${CUR}</b></div><div class="mu">${esc(m.descr)}</div>
+ ${o?`<div style="margin-top:14px" class="row sb"><b style="color:var(--v)">الحجم</b><span class="badge ${sh.size==null?'b-r':'b-g'}">إجباري</span></div>
+  ${o.size.map((x,i)=>`<div class="opt" data-size="${i}"><span><i class="radio ${sh.size===i?'on':''}"></i>${esc(x[0])}</span><span class="mu">${+x[1]?'+'+x[1]+' '+CUR:''}</span></div>`).join('')}
+  <div style="margin-top:14px"><b style="color:var(--v)">إضافات</b> <span class="mu">(اختياري)</span></div>
+  ${o.add.map((x,i)=>`<div class="opt" data-add="${i}"><span><i class="check ${sh.add.includes(i)?'on':''}">✓</i>${esc(x[0])}</span><span class="mu">+${x[1]} ${CUR}</span></div>`).join('')}`:''}
+ <div class="field" style="margin-top:14px"><input id="inote" maxlength="80" placeholder="ملاحظة: بدون بصل…" value="${esc(sh.note)}"></div>
+ <div class="row" style="margin-top:16px;gap:12px"><div class="stepper"><button data-qty="1">+</button><b class="num">${sh.q}</b><button data-qty="-1">−</button></div>
+ <button class="btn p" style="flex:1" data-addcart>أضف إلى السلة · <span class="num">${fmt(unitOf(m,sh)*sh.q)} ${CUR}</span></button></div></div></div></div>`;
+}
+function cCart(){
+ if(!cartCount())return `<div class="pad row"><button class="back" data-back>→</button><div class="h1">السلة</div></div><div class="empty"><div class="ic">🛍️</div>سلتك فارغة<br><button class="btn p" style="margin:16px auto 0" data-home>تصفح المطاعم</button></div>`;
+ const r=rest(C.cart.rid),sub=cartSub(),d=disc(),fee=+zoneSel().fee,tot=sub+fee-d,short=r.min_order-sub;
+ return `<div class="pad row"><button class="back" data-back>→</button><div><div class="h1">سلتك</div><div class="mu">${esc(r.name)}</div></div></div>
+ <div class="pad" style="padding-top:0">${C.cart.lines.map((l,i)=>`<div class="row sb" style="padding:12px 0;border-bottom:1px solid var(--ln)"><div style="flex:1"><b>${esc(l.name)}</b>${l.extra?`<div class="mu">${esc(l.extra)}</div>`:''}<div class="num" style="font-weight:800;color:var(--v);margin-top:2px">${fmt(l.unit*l.q)} ${CUR}</div></div><div class="stepper"><button data-cq="${i}" data-d="1">+</button><b class="num">${l.q}</b><button data-cq="${i}" data-d="-1">${l.q===1?'🗑':'−'}</button></div></div>`).join('')}
+ <button style="color:var(--o);font-weight:800;padding:12px 0" data-rest="${r.id}">+ أضف أصنافًا أخرى</button>
+ <div class="row" style="margin-top:4px"><div class="field" style="flex:1;padding:7px 12px"><input id="cpn" placeholder="كوبون الخصم (جرّب: اهلا)" value="${esc(C.couponIn)}"></div><button class="btn s" style="padding:10px 16px" data-coupon>تطبيق</button></div>
+ ${C.couponErr?`<div class="err">${C.couponErr}</div>`:''}${C.coupon?`<div class="ok">✓ ${esc(C.coupon.label)}</div>`:''}
+ <div style="margin-top:14px"><div class="line"><span>المجموع الفرعي</span><span class="num">${fmt(sub)} ${CUR}</span></div><div class="line"><span>التوصيل إلى ${esc(zoneSel().name)}</span><span class="num">${fmt(fee)} ${CUR}</span></div>${d?`<div class="line" style="color:var(--g)"><span>الخصم</span><span class="num">−${fmt(d)} ${CUR}</span></div>`:''}<div class="line t"><span>الإجمالي</span><span class="num">${fmt(tot)} ${CUR}</span></div></div>
+ ${short>0?`<div class="err">أضف ${fmt(short)} ${CUR} للوصول إلى الحد الأدنى للطلب</div>`:''}${!r.open?`<div class="err">المطعم مغلق الآن</div>`:''}</div>
+ <div class="stickyb"><button class="btn p w100" data-checkout ${short>0||!r.open?'disabled':''}>تابع للدفع</button></div>`;
+}
+function cAuth(){
+ const t=C.authTab;
+ return `<div class="pad row"><button class="back" data-back>→</button></div><div class="pad" style="padding-top:0">
+ <div class="h1">${C.after==='checkout'?'سجّل الدخول لإتمام طلبك':'أهلًا بك في منصتك'}</div><div class="mu" style="margin:4px 0 16px">${C.after==='checkout'?'سلتك محفوظة.':'سجّل الدخول لمتابعة طلباتك.'}</div>
+ <div class="tabs2"><button class="${t==='in'?'on':''}" data-authtab="in">تسجيل الدخول</button><button class="${t==='up'?'on':''}" data-authtab="up">حساب جديد</button></div>
+ <form id="authf">
+ ${t==='up'?`<label class="lbl">الاسم</label><div class="field"><input id="aname" required maxlength="40" placeholder="محمد" autocomplete="name"></div>
+ <label class="lbl">رقم الجوال</label><div class="field"><b class="mu">+966</b><input id="aphone" class="ltr" inputmode="numeric" maxlength="9" placeholder="5xxxxxxxx" required></div>`:''}
+ <label class="lbl">البريد الإلكتروني</label><div class="field"><input id="aemail" class="ltr" type="email" required placeholder="name@email.com" autocomplete="email"></div>
+ <label class="lbl">كلمة المرور</label><div class="field"><input id="apass" class="ltr" type="password" required minlength="6" placeholder="6 أحرف على الأقل" autocomplete="${t==='up'?'new-password':'current-password'}"></div>
+ ${C.authErr?`<div class="err">${esc(C.authErr)}</div>`:''}${C.authOk?`<div class="ok">${esc(C.authOk)}</div>`:''}
+ <button class="btn p w100" style="margin-top:18px" ${C.busy?'disabled':''}>${C.busy?'لحظة…':t==='up'?'أنشئ حسابي':'دخول'}</button></form>
+ <div class="demo"><b style="color:var(--v)">حسابات تجريبية للعرض</b><div class="mu">كلمة المرور لكل الحسابات: Demo@2026</div><div class="row">
+ ${[['customer','عميل'],['restaurant','مطعم'],['driver','مندوب'],['admin','الإدارة']].map(x=>`<button class="chip" data-demo="${x[0]}">${x[1]}</button>`).join('')}</div></div></div>`;
+}
+function cCheckout(){
+ const r=rest(C.cart.rid),z=zoneSel(),tot=cartSub()+ +z.fee-disc(),wal=+(G.profile?.wallet||0);
+ const pms=[['cash','💵','نقدًا عند الاستلام',''],['card','💳','بطاقة مدى / فيزا','الدفع الإلكتروني يُربط بالبوابة عند الإطلاق'],['wallet','👛','المحفظة','الرصيد: '+fmt(wal)+' '+CUR]];
+ const short=C.pay==='wallet'&&tot>wal;
+ return `<div class="pad row"><button class="back" data-back>→</button><div class="h1">إتمام الطلب</div></div>
+ <div class="pad" style="padding-top:0">
+ <label class="lbl">📍 منطقة التوصيل</label><div class="field"><select data-zone>${G.zones.filter(x=>x.active).map(x=>`<option value="${x.id}" ${x.id===z.id?'selected':''}>${esc(x.name)} — ${fmt(x.fee)} ${CUR}</option>`).join('')}</select></div>
+ <label class="lbl">العنوان بالتفصيل</label><div class="field"><input id="caddr" maxlength="150" placeholder="الشارع، رقم المبنى، الشقة" value="${esc(C.addr)}"></div>
+ <div class="card row sb" style="padding:12px 14px;margin-top:12px"><b style="color:var(--v)">⏱ وقت التوصيل</b><span class="mu">الآن · ${esc(r.eta)} دقيقة</span></div>
+ <div class="h2" style="margin:18px 0 10px">طريقة الدفع</div>
+ ${pms.map(p=>`<div class="pm ${C.pay===p[0]?'on':''}" data-pay="${p[0]}"><i class="radio ${C.pay===p[0]?'on':''}"></i><span style="font-size:22px">${p[1]}</span><div style="flex:1"><b>${p[2]}</b>${p[3]?`<div class="mu">${p[3]}</div>`:''}</div></div>`).join('')}
+ ${short?`<div class="err">رصيد المحفظة لا يكفي. اختر طريقة أخرى.</div>`:''}
+ <div class="field" style="margin-top:6px"><input id="dnote" maxlength="150" placeholder="ملاحظة للمندوب: اتصل عند الوصول" value="${esc(C.note)}"></div>
+ <div class="line t" style="margin-top:14px"><span>الإجمالي</span><span class="num">${fmt(tot)} ${CUR}</span></div></div>
+ <div class="stickyb"><button class="btn p w100" data-place ${short||C.busy?'disabled':''}>${C.busy?'جارٍ الإرسال…':`أكّد الطلب · <span class="num">${fmt(tot)} ${CUR}</span>`}</button></div>`;
+}
+function statusLabel(s){return ({new:['بانتظار المطعم','b-y'],preparing:['يُجهَّز','b-o'],ready:['جاهز للاستلام','b-o'],picked:['في الطريق','b-v'],delivered:['تم التوصيل','b-g'],rejected:['ملغي','b-r']})[s]||[s,'b-v']}
+const STEPS=['تم الإرسال','يُجهَّز','في الطريق','وصل'];
+const stepIdx=o=>({new:0,preparing:1,ready:1,picked:2,delivered:3})[o.status]??0;
+function cTrack(){
+ const o=curOrder();if(!o)return `<div class="spin"></div>`;const r=rest(o.restaurant_id);
+ if(o.status==='rejected')return `<div class="pad row"><button class="back" data-home>→</button></div><div class="empty"><div class="ic">😔</div><div class="h1">اعتذر المطعم عن طلبك</div><p style="margin:8px 0 18px">${o.pay_method==='cash'?'لم يتم خصم أي مبلغ.':'تم استرداد المبلغ كاملًا.'}</p><button class="btn p" style="margin:auto" data-home>اختر مطعمًا آخر</button></div>`;
+ const i=stepIdx(o);
+ const titles={new:'بانتظار تأكيد المطعم…',preparing:'المطعم يجهّز طلبك',ready:'طلبك جاهز وبانتظار المندوب',picked:'المندوب في الطريق إليك',delivered:'تم التوصيل، بالهناء والشفاء!'};
+ const pos=o.status==='delivered'?[300,220]:o.status==='picked'?[[60,60],[170,120],[240,170],[290,210]][o.driver_stage]||[200,150]:[60,60];
+ return `<div class="map"><div class="rd" style="left:0;top:70px;width:100%;height:16px"></div><div class="rd" style="left:70px;top:0;width:16px;height:100%"></div><div class="rd" style="left:0;top:230px;width:100%;height:16px"></div><div class="rd" style="left:300px;top:0;width:16px;height:100%"></div>
+  <div class="pin" style="left:52px;top:30px;background:var(--o)"></div><div class="pin" style="left:296px;top:190px;background:var(--v)"></div>
+  ${o.driver_id?`<div class="rider" style="left:${pos[0]}px;top:${pos[1]}px"></div>`:''}
+  <button class="back" style="position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px" data-home>→</button></div>
+ <div class="pad"><div class="h2">${titles[o.status]}</div><div class="mu">طلب #${o.id} · ${esc(r.name)}${['preparing','ready'].includes(o.status)?` · يصل خلال ${(o.prep_min||15)+10} دقيقة تقريبًا`:''}</div>
+ <div class="track"><span class="bar" style="width:calc(${i/3*100}% - ${i/3*48}px)"></span>${STEPS.map((s,k)=>`<div class="s ${k<=i?'done':''}"><i>${k<=i?'✓':k+1}</i>${s}</div>`).join('')}</div>
+ ${o.driver_id&&o.status!=='delivered'?`<div class="card row" style="padding:12px;gap:12px"><div style="width:44px;height:44px;border-radius:50%;background:var(--vl);display:grid;place-items:center;font-size:20px">🛵</div><div style="flex:1"><b>${o.status==='picked'?'المندوب في الطريق':'المندوب متجه للمطعم'}</b><div class="mu">سيتصل بك عند الوصول</div></div></div>
+ <div class="card row sb" style="padding:12px 14px;margin-top:10px;background:var(--yl);border-color:#F5E2A8"><span>كود التسليم — أعطه للمندوب</span><b class="num" style="font-size:24px;color:var(--v);letter-spacing:3px">${esc(o.delivery_code)}</b></div>`:''}
+ <details style="margin-top:12px" open><summary style="cursor:pointer;font-weight:800;color:var(--v)">تفاصيل الطلب</summary>${o.items.map(it=>`<div class="line"><span>${it.q}× ${esc(it.name)}</span><span class="num">${fmt(it.q*it.price)}</span></div>`).join('')}<div class="line"><span>التوصيل</span><span class="num">${fmt(o.fee)}</span></div>${+o.discount?`<div class="line" style="color:var(--g)"><span>الخصم</span><span class="num">−${fmt(o.discount)}</span></div>`:''}<div class="line t"><span>الإجمالي · ${{cash:'نقدًا',card:'بطاقة',wallet:'محفظة'}[o.pay_method]}</span><span class="num">${fmt(o.total)} ${CUR}</span></div></details>
+ ${o.status==='delivered'&&!o.rating_food?`<button class="btn p w100" style="margin-top:16px" data-go="rate">قيّم طلبك</button>`:''}${o.rating_food?`<div class="ok" style="text-align:center">شكرًا لتقييمك ★ ${o.rating_food}</div>`:''}
+ </div>`;
+}
+function cRate(){
+ const o=curOrder(),rt=C.rating,tags=['سريع','ساخن','كمية ممتازة','تغليف جيد','تأخر'];
+ const st=k=>`<div class="stars">${[5,4,3,2,1].map(n=>`<button class="${rt[k]>=n?'on':''}" data-star="${k}" data-n="${n}" aria-label="${n}">★</button>`).join('')}</div>`;
+ return `<div class="pad" style="padding-top:40px;text-align:center"><div style="font-size:54px">🎉</div><div class="h1">كيف كان طلبك؟</div><div class="mu">${esc(rest(o.restaurant_id).name)} · #${o.id}</div></div>
+ <div class="pad"><div class="row sb"><b>الطعام</b>${st('f')}</div><div class="row sb" style="margin-top:12px"><b>المندوب</b>${st('d')}</div>
+ <div class="row" style="flex-wrap:wrap;gap:8px;margin-top:18px">${tags.map(t=>`<button class="chip ${rt.tags.includes(t)?'on':''}" data-tag="${t}">${t}</button>`).join('')}</div>
+ <button class="btn p w100" style="margin-top:24px" data-rate ${rt.f&&rt.d?'':'disabled'}>أرسل التقييم</button><button class="mu w100" style="margin-top:12px" data-home>تخطَّ</button></div>`;
+}
+function cOrders(){
+ if(!G.session)return `<div class="pad"><div class="h1">طلباتي</div></div><div class="empty"><div class="ic">🧾</div>سجّل الدخول لترى طلباتك<br><button class="btn p" style="margin:16px auto 0" data-login>تسجيل الدخول</button></div>`;
+ const mine=myOrders();
+ return `<div class="pad"><div class="h1">طلباتي</div></div>${mine.length?mine.map(o=>{const l=statusLabel(o.status);return `<div class="card" style="margin:0 18px 10px;padding:14px;cursor:pointer" data-open="${o.id}"><div class="row sb"><b style="color:var(--v)">${esc(rest(o.restaurant_id).name)}</b><span class="badge ${l[1]}">${l[0]}</span></div><div class="mu">#${o.id} · ${new Date(o.created_at).toLocaleString('ar-SA',{dateStyle:'medium',timeStyle:'short'})} · <span class="num">${fmt(o.total)} ${CUR}</span></div></div>`}).join(''):`<div class="empty"><div class="ic">🧾</div>لا توجد طلبات بعد<br><button class="btn p" style="margin:16px auto 0" data-home>اطلب الآن</button></div>`}`;
+}
+function cAccount(){
+ if(!G.session)return `<div class="pad"><div class="h1">حسابي</div></div><div class="empty"><div class="ic">👤</div>لم تسجّل الدخول بعد<br><button class="btn p" style="margin:16px auto 0" data-login>تسجيل الدخول</button></div>`;
+ const p=G.profile||{};
+ return `<div class="pad"><div class="h1">حسابي</div></div><div class="pad" style="padding-top:0">
+ <div class="card" style="padding:16px"><b style="font-size:17px">${esc(p.name||'—')}</b><div class="mu ltr" style="text-align:right">${esc(G.session.user.email)}</div><div class="row sb" style="margin-top:10px"><span>رصيد المحفظة</span><b class="num" style="color:var(--g)">${fmt(p.wallet)} ${CUR}</b></div></div>
+ <div class="card" style="padding:16px;margin-top:12px"><b style="color:var(--v)">لديك كود شريك؟</b><div class="mu">للمطاعم والمناديب وإدارة المنصة</div><div class="row" style="margin-top:10px"><div class="field" style="flex:1;padding:7px 12px"><input id="pcode" class="ltr" placeholder="XXXX-XXXX"></div><button class="btn s" style="padding:10px 16px" data-claim>تفعيل</button></div>${C.codeMsg?`<div class="err">${esc(C.codeMsg)}</div>`:''}</div>
+ <button class="btn d w100" style="margin-top:18px" data-logout>تسجيل الخروج</button></div>`;
+}
+function renderCustomer(){
+ const fm={home:cHome,rest:cRest,cart:cCart,auth:cAuth,checkout:cCheckout,track:cTrack,rate:cRate,orders:cOrders,account:cAccount};
+ const tabs=['home','orders','account'].includes(C.screen);
+ const live=myOrders().some(o=>!['delivered','rejected'].includes(o.status));
+ return `<div class="mob"><div class="view">${(fm[C.screen]||cHome)()}</div>
+ ${tabs?`<nav class="tabbar">${[['home','الرئيسية',ic.home],['orders','طلباتي',ic.bag],['account','حسابي',ic.user]].map(t=>`<button class="${C.screen===t[0]?'on':''}" data-tab="${t[0]}">${t[0]==='orders'&&live?'<i class="dotn"></i>':''}${t[2]}${t[1]}</button>`).join('')}</nav>`:''}</div>${C.sheet?cSheet():''}`;
+}
+function addLine(m,size,add,q,note){
+ if(C.cart.rid&&C.cart.rid!==m.restaurant_id&&C.cart.lines.length){C.cart={rid:null,lines:[]};C.coupon=null;toast('بدأنا سلة جديدة من '+rest(m.restaurant_id).name)}
+ C.cart.rid=m.restaurant_id;
+ const extra=m.options?[m.options.size[size][0],...add.map(i=>m.options.add[i][0])].join('، '):'';
+ const unit=unitOf(m,{size,add});const key=m.id+'|'+size+'|'+add.slice().sort().join(',')+'|'+(note||'');
+ const ex=C.cart.lines.find(l=>l.key===key);
+ if(ex)ex.q+=q;else C.cart.lines.push({key,item_id:m.id,name:m.name,extra:[extra,note].filter(Boolean).join(' · '),unit,q,size,adds:add.slice(),note:note||''});
+ saveCart();
+}
+async function custClick(e){
+ const t=e.target.closest('[data-quick],[data-close-sheet],button,[data-rest],[data-item],[data-size],[data-add],[data-pay],[data-open]');if(!t)return;const d=t.dataset;
+ if(d.closeSheet!==undefined){if(e.target===t){C.sheet=null;render()}return}
+ if(d.tab){C.hist=[];C.screen=d.tab;render();return}
+ if(d.cat){C.cat=d.cat;render();return}
+ if(d.clearq!==undefined){C.q='';C.cat='الكل';render();return}
+ if(d.rest){C.rid=d.rest;C.sec=null;go('rest');return}
+ if(d.back!==undefined){back();return}
+ if(d.home!==undefined){C.hist=[];C.screen='home';render();return}
+ if(d.login!==undefined){C.after=null;go('auth');return}
+ if(d.go){go(d.go);return}
+ if(d.sec){C.sec=d.sec;render();const tgt=document.querySelector(`[data-secname="${CSS.escape(d.sec)}"]`);if(tgt)scrollTo({top:tgt.getBoundingClientRect().top+scrollY-60,behavior:'smooth'});return}
+ if(d.quick){const m=G.menu.find(x=>x.id===d.quick);if(m.options){C.sheet={mid:m.id,size:null,add:[],q:1,note:''};render();return}addLine(m,0,[],1,'');render();return}
+ if(d.item){if(!rest(C.rid).open){toast('المطعم مغلق الآن');return}const m=G.menu.find(x=>x.id===d.item);C.sheet={mid:m.id,size:m.options?null:0,add:[],q:1,note:''};render();return}
+ if(d.size){C.sheet.size=+d.size;render();return}
+ if(d.add){const i=+d.add,a=C.sheet.add;a.includes(i)?a.splice(a.indexOf(i),1):a.push(i);render();return}
+ if(d.qty){C.sheet.q=Math.max(1,Math.min(50,C.sheet.q+ +d.qty));render();return}
+ if(d.addcart!==undefined){const m=G.menu.find(x=>x.id===C.sheet.mid);if(m.options&&C.sheet.size==null){toast('اختر الحجم أولًا',1);return}addLine(m,C.sheet.size||0,C.sheet.add,C.sheet.q,(document.getElementById('inote')?.value||'').trim());C.sheet=null;render();return}
+ if(d.cq){const l=C.cart.lines[+d.cq];l.q+= +d.d;if(l.q<=0)C.cart.lines.splice(+d.cq,1);if(!C.cart.lines.length){C.cart.rid=null;C.coupon=null}saveCart();render();return}
+ if(d.coupon!==undefined){const v=(document.getElementById('cpn').value||'').trim().replace(/[إأآ]/g,'ا');C.couponIn=v;if(!v){C.couponErr='اكتب كود الكوبون أولًا';render();return}
+  if(!G.session){C.couponErr='سجّل الدخول لتطبيق الكوبون';render();return}
+  const {data,error}=await sb.rpc('dl_check_coupon',{p_code:v});if(error||!data){C.coupon=null;C.couponErr='هذا الكوبون غير صالح أو منتهي'}else{C.coupon=data;C.couponErr=''}render();return}
+ if(d.checkout!==undefined){if(G.session)go('checkout');else{C.after='checkout';go('auth')}return}
+ if(d.authtab){C.authTab=d.authtab;C.authErr=C.authOk='';render();return}
+ if(d.demo){document.getElementById('aemail').value=d.demo+'@demo-delivery.app';document.getElementById('apass').value='Demo@2026';if(C.authTab!=='in'){C.authTab='in';render();document.getElementById('aemail').value=d.demo+'@demo-delivery.app';document.getElementById('apass').value='Demo@2026'}document.getElementById('authf').requestSubmit();return}
+ if(d.pay){C.pay=d.pay;render();return}
+ if(d.place!==undefined){
+  const addr=(document.getElementById('caddr').value||'').trim();if(addr.length<4){toast('اكتب عنوان التوصيل',1);document.getElementById('caddr').focus();return}
+  C.addr=addr;LS.set('addr',addr);C.note=document.getElementById('dnote').value||'';C.busy=true;render();
+  const z=zoneSel();
+  const {data,error}=await sb.rpc('dl_place_order',{p_rest:C.cart.rid,p_lines:C.cart.lines.map(l=>({item_id:l.item_id,q:l.q,size:l.size,adds:l.adds,note:l.note})),p_pay:C.pay,p_coupon:C.coupon?.code||null,p_note:C.note,p_address:z.name+' — '+addr,p_zone:z.id});
+  C.busy=false;if(error){toast(errMsg(error),1);render();return}
+  G.orders.unshift(data);C.orderId=data.id;C.cart={rid:null,lines:[]};saveCart();C.coupon=null;C.couponIn='';C.note='';C.hist=['home'];C.screen='track';
+  await loadProfile();render();scrollTo(0,0);toast('تم إرسال طلبك للمطعم');return}
+ if(d.open){C.orderId=+d.open;go('track');return}
+ if(d.star){C.rating[d.star]=+d.n;render();return}
+ if(d.tag){const a=C.rating.tags;a.includes(d.tag)?a.splice(a.indexOf(d.tag),1):a.push(d.tag);render();return}
+ if(d.rate!==undefined){const {error}=await sb.rpc('dl_order_action',{p_id:C.orderId,p_action:'rate',p_arg:`${C.rating.f}|${C.rating.d}|${C.rating.tags.join(',')}`});if(error){toast(errMsg(error),1);return}C.rating={f:0,d:0,tags:[]};await loadOrders();C.hist=[];C.screen='home';render();toast('شكرًا! تقييمك يساعدنا');return}
+ if(d.reorder){const o=G.orders.find(x=>x.id===+d.reorder);const lines=[];for(const it of o.items){const m=G.menu.find(x=>x.id===it.item_id);if(!m||!m.available)continue;if(m.options){continue}lines.push({key:m.id+'|0||',item_id:m.id,name:m.name,extra:'',unit:+m.price,q:it.q,size:0,adds:[],note:''})}
+  if(!lines.length){C.rid=o.restaurant_id;go('rest');toast('اختر أصنافك من جديد');return}C.cart={rid:o.restaurant_id,lines};saveCart();C.rid=o.restaurant_id;go('cart');return}
+ if(d.claim!==undefined){const v=document.getElementById('pcode').value.trim();if(!v)return;const {data,error}=await sb.rpc('dl_claim_role',{p_code:v});if(error){C.codeMsg=errMsg(error);render();return}G.profile=data;C.codeMsg='';ST.first=true;await loadOrders();render();toast('تم تفعيل حسابك');return}
+ if(d.logout!==undefined){await sb.auth.signOut();return}
+}
+async function authSubmit(e){
+ e.preventDefault();const email=document.getElementById('aemail').value.trim(),pass=document.getElementById('apass').value;
+ C.authErr=C.authOk='';C.busy=true;render();
+ let res;
+ if(C.authTab==='up'){const name=document.getElementById('aname')?.value.trim(),phone=(document.getElementById('aphone')?.value||'').replace(/\D/g,'');
+  if(!/^5\d{8}$/.test(phone)){C.busy=false;C.authErr='رقم الجوال يجب أن يبدأ بـ 5 ويتكون من 9 أرقام';render();return}
+  C.pendingName=name;C.pendingPhone=phone;res=await sb.auth.signUp({email,password:pass,options:{data:{name,phone}}});
+  if(!res.error&&!res.data.session){C.busy=false;C.authOk='أرسلنا رابط تأكيد إلى بريدك. أكّده ثم سجّل الدخول.';C.authTab='in';render();return}
+  if(!res.error&&res.data.user&&res.data.user.identities&&res.data.user.identities.length===0){C.busy=false;C.authErr='هذا البريد مسجّل بالفعل، سجّل الدخول';C.authTab='in';render();return}
+ } else res=await sb.auth.signInWithPassword({email,password:pass});
+ C.busy=false;if(res.error){C.authErr=errMsg(res.error);render();return}
+}
+
+/* ================= RESTAURANT ================= */
+function ago(t){const m=Math.max(0,Math.round((Date.now()-new Date(t))/60000));return m<1?'الآن':m<60?`منذ ${m} د`:`منذ ${Math.floor(m/60)} س`}
+const isToday=t=>new Date(t).toDateString()===new Date().toDateString();
+function oc(o,act,isNew){return `<div class="oc ${isNew?'new':''}"><div class="row sb"><b style="color:var(--v)">#${o.id}</b><span class="mu">${ago(o.created_at)}</span></div><div class="it">${o.items.map(i=>i.q+'× '+esc(i.name)).join('<br>')}</div>${o.note?`<div class="mu">📝 ${esc(o.note)}</div>`:''}<div class="row sb"><span class="mu">${esc(o.customer_name)} · ${{cash:'نقدًا',card:'بطاقة',wallet:'محفظة'}[o.pay_method]}</span><b class="num" style="color:var(--v)">${fmt(o.total)}</b></div>${act}</div>`}
+function shell(title,sub,tabs,cur,attr,body,extra=''){
+ return `<div class="desk"><aside class="side"><div class="who">${title}<small>${sub}</small></div>${tabs.map(x=>`<button class="${cur===x[0]?'on':''}" ${attr}="${x[0]}"><span>${x[1]}</span>${x[2]?`<span class="cnt">${x[2]}</span>`:''}</button>`).join('')}<button class="out" data-logout>تسجيل الخروج</button></aside>
+ <nav class="topm">${tabs.map(x=>`<button class="${cur===x[0]?'on':''}" ${attr}="${x[0]}">${x[1]}${x[2]?' ('+x[2]+')':''}</button>`).join('')}<button data-logout>خروج</button></nav>
+ <main class="main">${body}</main>${extra}</div>`;
+}
+function renderRestaurant(){
+ const r=rest(G.profile.restaurant_id),os=G.orders.filter(o=>o.restaurant_id===r.id);
+ const nw=os.filter(o=>o.status==='new'),pr=os.filter(o=>o.status==='preparing'),rd=os.filter(o=>o.status==='ready');
+ const today=os.filter(o=>isToday(o.created_at)&&o.status!=='rejected'),sales=today.reduce((a,o)=>a+ +o.subtotal,0);
+ const rated=os.filter(o=>o.rating_food);const avg=rated.length?(rated.reduce((a,o)=>a+o.rating_food,0)/rated.length).toFixed(1):r.rating;
+ const T=ST.tab;let body='';
+ if(T==='orders')body=`<div class="row sb" style="margin-bottom:14px;flex-wrap:wrap"><div class="h1">الطلبات</div><div class="row"><span class="mu">${r.open?'مفتوح لاستقبال الطلبات':'مغلق — لا تصلك طلبات'}</span><button class="switch ${r.open?'on':''}" data-ropen aria-label="فتح/إغلاق"></button></div></div>
+ <div class="kpis"><div class="kpi"><small>طلبات اليوم</small><b class="num">${today.length}</b></div><div class="kpi"><small>مبيعات اليوم</small><b class="num">${fmt(sales)}</b></div><div class="kpi"><small>قيد التنفيذ</small><b class="num">${nw.length+pr.length+rd.length}</b></div><div class="kpi"><small>تقييم العملاء</small><b class="num">★ ${avg}</b></div></div>
+ <div class="lanes">
+  <div class="lane"><h4>جديد <span class="badge b-o">${nw.length}</span></h4>${nw.map(o=>oc(o,`<button class="btn p w100" style="padding:9px;font-size:14px;margin-top:8px" data-rmodal="${o.id}">مراجعة وقبول</button>`,true)).join('')||'<div class="mu" style="text-align:center;padding:30px 0">لا طلبات جديدة<br>ستصلك هنا فورًا مع تنبيه صوتي 🔔</div>'}</div>
+  <div class="lane"><h4>قيد التجهيز <span class="badge b-y">${pr.length}</span></h4>${pr.map(o=>oc(o,`<button class="btn g w100" style="padding:9px;font-size:14px;margin-top:8px" data-ract="ready" data-id="${o.id}">جاهز للاستلام ✓</button>`)).join('')}</div>
+  <div class="lane"><h4>جاهز للاستلام <span class="badge b-g">${rd.length}</span></h4>${rd.map(o=>oc(o,`<div class="mu" style="margin-top:6px">${o.driver_id?'🛵 مندوب في الطريق للمطعم':'بانتظار مندوب…'}</div>`)).join('')}</div>
+ </div>`;
+ if(T==='menu')body=`<div class="h1" style="margin-bottom:14px">المنيو</div><div class="tblw"><table class="tbl"><tr><th>الصنف</th><th>القسم</th><th>السعر (${CUR})</th><th>متاح</th></tr>${menuOf(r.id).map(m=>`<tr><td>${esc(m.emoji)} ${esc(m.name)}</td><td class="mu">${esc(m.section)}</td><td><input class="inp num" value="${m.price}" data-mprice="${m.id}" inputmode="decimal"></td><td><button class="switch ${m.available?'on':''}" data-mav="${m.id}"></button></td></tr>`).join('')}</table></div><p class="mu" style="margin-top:10px">إيقاف صنف يخفيه من تطبيق العميل فورًا (مثلًا عند نفاد الكمية). تعديل السعر يُطبَّق على الطلبات الجديدة.</p>`;
+ if(T==='reports'){const days=[...Array(7)].map((_,i)=>{const d=new Date();d.setDate(d.getDate()-(6-i));return d});const vals=days.map(d=>os.filter(o=>o.status==='delivered'&&new Date(o.created_at).toDateString()===d.toDateString()).reduce((a,o)=>a+ +o.subtotal,0));const tot=vals.reduce((a,b)=>a+b,0),mx=Math.max(1,...vals);
+  const comm=os.filter(o=>o.status==='delivered'&&days.some(d=>new Date(o.created_at).toDateString()===d.toDateString())).reduce((a,o)=>a+o.subtotal*o.commission_pct/100,0);
+  body=`<div class="h1" style="margin-bottom:14px">التقارير والمستحقات — آخر 7 أيام</div><div class="kpis"><div class="kpi"><small>المبيعات المسلّمة</small><b class="num">${fmt(tot)}</b></div><div class="kpi"><small>عمولة المنصة (${r.commission}٪)</small><b class="num">${fmt(comm)}</b></div><div class="kpi"><small>صافي مستحقاتك</small><b class="num" style="color:var(--g)">${fmt(tot-comm)}</b></div><div class="kpi"><small>عدد الطلبات</small><b class="num">${os.filter(o=>o.status==='delivered').length}</b></div></div>
+  <div class="card" style="padding:22px 18px 34px"><b style="color:var(--v)">المبيعات اليومية (${CUR})</b><div class="bars">${vals.map((v,i)=>`<div class="${i===6?'on':''}" style="height:${v/mx*140}px">${v?`<em>${fmt(v)}</em>`:''}<span>${i===6?'اليوم':days[i].toLocaleDateString('ar-SA',{weekday:'short'})}</span></div>`).join('')}</div></div>`}
+ const m=ST.modal?G.orders.find(o=>o.id===ST.modal&&o.status==='new'):null;
+ const modal=m?`<div class="modal-bg" data-rclose-bg><div class="modal"><div class="row sb"><b style="font-size:22px;color:var(--o)">طلب جديد #${m.id}</b><span class="mu">${ago(m.created_at)}</span></div>
+  <div style="margin:12px 0">${m.items.map(it=>`<div class="line"><span>${it.q}× ${esc(it.name)}</span><span class="num">${fmt(it.q*it.price)}</span></div>`).join('')}${m.note?`<div class="mu">ملاحظة: ${esc(m.note)}</div>`:''}<div class="line t"><span>المجموع · ${{cash:'نقدًا',card:'بطاقة',wallet:'محفظة'}[m.pay_method]}</span><span class="num">${fmt(m.subtotal)} ${CUR}</span></div></div>
+  <b style="color:var(--v)">وقت التجهيز</b><div class="pt">${[10,15,20,30].map(p=>`<button class="${ST.prep===p?'on':''}" data-prep="${p}">${p} د</button>`).join('')}</div>
+  <div class="row" style="gap:10px;margin-top:6px"><button class="btn p" style="flex:2" data-ract="accept" data-id="${m.id}">قبول الطلب</button><button class="btn d" style="flex:1" data-ract="reject" data-id="${m.id}">رفض</button></div>
+  <button class="mu w100" style="margin-top:10px" data-rclose>لاحقًا</button></div></div>`:'';
+ return shell(esc(r.emoji)+' '+esc(r.name),'لوحة المطعم',[['orders','الطلبات',nw.length],['menu','المنيو',0],['reports','التقارير',0]],T,'data-rtab',body,modal);
+}
+async function restClick(e){
+ const t=e.target.closest('button,[data-rclose-bg]');if(!t)return;const d=t.dataset;
+ if(d.rcloseBg!==undefined){if(e.target===t){ST.modal=null;render()}return}
+ if(d.logout!==undefined){await sb.auth.signOut();return}
+ if(d.rtab){ST.tab=d.rtab;render();return}
+ if(d.rmodal){ST.modal=+d.rmodal;render();return}
+ if(d.rclose!==undefined){ST.modal=null;render();return}
+ if(d.prep){ST.prep=+d.prep;render();return}
+ if(d.ract){t.disabled=true;const {error}=await sb.rpc('dl_order_action',{p_id:+d.id,p_action:d.ract,p_arg:d.ract==='accept'?String(ST.prep):null});if(error)toast(errMsg(error),1);else toast({accept:'تم قبول الطلب',reject:'تم رفض الطلب',ready:'تم إبلاغ المندوب'}[d.ract]);ST.modal=null;await loadOrders();render();return}
+ if(d.ropen!==undefined){const r=rest(G.profile.restaurant_id);const {error}=await sb.from('dl_restaurants').update({open:!r.open}).eq('id',r.id);if(error)toast(errMsg(error),1);else{r.open=!r.open;render()}return}
+ if(d.mav){const m=G.menu.find(x=>x.id===d.mav);const {error}=await sb.from('dl_menu_items').update({available:!m.available}).eq('id',m.id);if(error)toast(errMsg(error),1);else{m.available=!m.available;render()}return}
+}
+async function restChange(e){const d=e.target.dataset;if(d.mprice){const v=parseFloat(e.target.value);if(!(v>=0)){toast('سعر غير صالح',1);render();return}const {error}=await sb.from('dl_menu_items').update({price:v}).eq('id',d.mprice);if(error)toast(errMsg(error),1);else{G.menu.find(x=>x.id===d.mprice).price=v;toast('تم تحديث السعر')}}}
+
+/* ================= DRIVER ================= */
+function renderDriver(){
+ const me=G.session.user.id;
+ const job=G.orders.find(o=>o.driver_id===me&&['preparing','ready','picked'].includes(o.status));
+ const offers=ST.online&&!job?G.orders.filter(o=>!o.driver_id&&['preparing','ready'].includes(o.status)):[];
+ let b='';
+ if(job){const r=rest(job.restaurant_id),stage=job.status==='picked'?job.driver_stage:0;
+  const labels=['متجه للمطعم','استلمت الطلب','في الطريق للعميل','عند العميل'];
+  b=`<div class="pad"><div class="row sb"><b class="h2">طلب #${job.id}</b><span class="badge b-o">${labels[stage]}</span></div><div class="dstep">${[0,1,2,3].map(i=>`<i class="${i<=stage?'on':''}"></i>`).join('')}</div>
+  <div class="route"><div><b>${esc(r.name)}</b><div class="mu">الاستلام</div></div><div><b>${esc(job.address||'—')}</b><div class="mu">التسليم · ${esc(job.customer_name)}${job.note?' · '+esc(job.note):''}</div></div></div>
+  <div class="card" style="padding:12px;margin-bottom:12px">${job.items.map(i=>`<div class="line"><span>${i.q}× ${esc(i.name)}</span></div>`).join('')}<div class="line t"><span>${job.pay_method==='cash'?'حصّل من العميل':'مدفوع مسبقًا'}</span><span class="num">${job.pay_method==='cash'?fmt(job.total)+' '+CUR:'✓'}</span></div></div>
+  ${stage===0?(job.status==='ready'?`<button class="btn p w100" data-dact="pickup">وصلت واستلمت الطلب</button>`:`<button class="btn s w100" disabled>المطعم يجهّز الطلب…</button><p class="mu" style="text-align:center;margin-top:8px">سيصلك تنبيه عندما يصبح جاهزًا</p>`):''}
+  ${stage===1?`<button class="btn p w100" data-dact="depart">ابدأ التوصيل للعميل</button>`:''}
+  ${stage===2?`<button class="btn p w100" data-dact="arrive">وصلت للعميل</button>`:''}
+  ${stage===3?`<b style="color:var(--v)">أدخل كود التسليم من العميل</b><div class="otp" style="margin:12px 0">${[0,1,2,3].map(i=>`<input maxlength="1" inputmode="numeric" data-dotp="${i}" aria-label="رقم ${i+1}">`).join('')}</div>${ST.dErr?`<div class="err">${esc(ST.dErr)}</div>`:''}<button class="btn g w100" style="margin-top:10px" data-dact="deliver">تأكيد التسليم</button>`:''}</div>`;
+ } else if(!ST.online)b=`<div class="empty"><div class="ic">😴</div>أنت غير متصل<br>اتصل لتبدأ استقبال الطلبات</div>`;
+ else if(offers.length)b=offers.map(o=>{const r=rest(o.restaurant_id);return `<div class="offer"><div class="row sb"><b style="color:var(--o);font-size:17px">طلب توصيل #${o.id}</b><span class="badge b-g">+${fmt(Math.round(12+o.total*.05))} ${CUR}</span></div>
+  <div class="route"><div><b>${esc(r.name)}</b><div class="mu">${o.status==='ready'?'جاهز للاستلام':'يُجهَّز الآن'}</div></div><div><b>${esc(o.address||'—')}</b><div class="mu">${o.items.length} أصناف · ${o.pay_method==='cash'?'نقدًا':'مدفوع'}</div></div></div>
+  <button class="btn p w100" data-dtake="${o.id}">قبول</button></div>`}).join('');
+ else b=`<div class="empty"><div class="ic">📡</div>بانتظار طلبات قريبة منك…<br><span class="mu">سيصلك تنبيه فور وجود طلب</span></div>`;
+ return `<div class="mob"><div class="view"><div class="d-head"><div class="row sb"><span style="font-size:13px;opacity:.85">أرباح اليوم</span><div class="row"><span style="font-size:13px">${ST.online?'متصل':'غير متصل'}</span><button class="switch ${ST.online?'on':''}" data-donline aria-label="اتصال"></button></div></div><b class="big num">${fmt(Math.round(G.stats.earn||0))} ${CUR}</b><div class="row sb"><span style="font-size:13px;opacity:.85" class="num">${G.stats.trips||0} توصيلات اليوم</span><button style="font-size:13px;color:#C9BFE0" data-logout>خروج</button></div></div>${b}</div></div>`;
+}
+async function drvClick(e){
+ const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+ if(d.logout!==undefined){await sb.auth.signOut();return}
+ if(d.donline!==undefined){ST.online=!ST.online;render();return}
+ if(d.dtake){t.disabled=true;const {error}=await sb.rpc('dl_order_action',{p_id:+d.dtake,p_action:'take'});if(error)toast(errMsg(error),1);else toast('الطلب لك، توجّه للمطعم');await loadOrders();render();return}
+ if(d.dact){const job=G.orders.find(o=>o.driver_id===G.session.user.id&&['preparing','ready','picked'].includes(o.status));let arg=null;
+  if(d.dact==='deliver'){arg=[...document.querySelectorAll('[data-dotp]')].map(i=>i.value).join('');if(arg.length<4){ST.dErr='أدخل الكود كاملًا';render();return}}
+  t.disabled=true;const {error}=await sb.rpc('dl_order_action',{p_id:job.id,p_action:d.dact,p_arg:arg});
+  if(error){ST.dErr=d.dact==='deliver'?errMsg(error):'';if(d.dact!=='deliver')toast(errMsg(error),1)}else{ST.dErr='';if(d.dact==='deliver')toast('تم التسليم 🎉')}
+  await loadOrders();render();return}
+}
+
+/* ================= ADMIN ================= */
+function renderAdmin(){
+ const T=ST.adminTab,os=G.orders,today=os.filter(o=>isToday(o.created_at));
+ const live=os.filter(o=>!['delivered','rejected'].includes(o.status));
+ const gmv=today.filter(o=>o.status!=='rejected').reduce((a,o)=>a+ +o.total,0);
+ const comm=today.filter(o=>o.status==='delivered').reduce((a,o)=>a+o.subtotal*o.commission_pct/100,0);
+ let body='';
+ if(T==='dash'){const by=['new','preparing','ready','picked','delivered','rejected'].map(s=>[s,today.filter(o=>o.status===s).length]);const mx=Math.max(1,...by.map(x=>x[1]));
+  const perR=G.rests.map(r=>[r,today.filter(o=>o.restaurant_id===r.id&&o.status!=='rejected')]).sort((a,b)=>b[1].length-a[1].length);
+  body=`<div class="h1" style="margin-bottom:14px">نظرة عامة — اليوم</div>
+ <div class="kpis"><div class="kpi"><small>طلبات اليوم</small><b class="num">${today.length}</b></div><div class="kpi"><small>قيمة المبيعات</small><b class="num">${fmt(gmv)}</b></div><div class="kpi"><small>عمولة المنصة (المسلّم)</small><b class="num" style="color:var(--g)">${fmt(comm)}</b></div><div class="kpi"><small>طلبات نشطة الآن</small><b class="num" style="color:var(--o)">${live.length}</b></div></div>
+ <div class="grid2"><div class="card" style="padding:16px"><b style="color:var(--v)">الطلبات حسب الحالة</b>${by.map(([s,n])=>`<div style="margin-top:10px"><div class="row sb"><span>${statusLabel(s)[0]}</span><b class="num">${n}</b></div><div class="hbar"><i style="width:${n/mx*100}%"></i></div></div>`).join('')}</div>
+ <div class="card" style="padding:16px"><b style="color:var(--v)">أداء المطاعم اليوم</b>${perR.map(([r,l])=>`<div class="row sb" style="padding:10px 0;border-bottom:1px solid var(--ln)"><span>${esc(r.emoji)} ${esc(r.name)}</span><span class="mu num">${l.length} طلب · ${fmt(l.reduce((a,o)=>a+ +o.subtotal,0))} ${CUR}</span></div>`).join('')}</div></div>`}
+ if(T==='orders')body=`<div class="h1" style="margin-bottom:14px">كل الطلبات</div>${os.length?`<div class="tblw"><table class="tbl"><tr><th>#</th><th>الوقت</th><th>المطعم</th><th>العميل</th><th>الدفع</th><th>الإجمالي</th><th>الحالة</th></tr>${os.map(o=>{const l=statusLabel(o.status);return `<tr><td class="num">${o.id}</td><td class="mu">${ago(o.created_at)}</td><td>${esc(rest(o.restaurant_id).name)}</td><td>${esc(o.customer_name)}</td><td>${{cash:'نقدًا',card:'بطاقة',wallet:'محفظة'}[o.pay_method]}</td><td class="num">${fmt(o.total)}</td><td><span class="badge ${l[1]}">${l[0]}</span></td></tr>`}).join('')}</table></div>`:'<div class="empty">لا توجد طلبات بعد</div>'}`;
+ if(T==='rests')body=`<div class="h1" style="margin-bottom:14px">المطاعم والعمولات</div><div class="tblw"><table class="tbl"><tr><th>المطعم</th><th>الحالة</th><th>التقييم</th><th>العمولة ٪</th></tr>${G.rests.map(r=>`<tr><td>${esc(r.emoji)} ${esc(r.name)}</td><td><span class="badge ${r.open?'b-g':'b-r'}">${r.open?'مفتوح':'مغلق'}</span></td><td class="num">★ ${r.rating}</td><td><input class="inp num" value="${r.commission}" data-comm="${r.id}" inputmode="decimal"></td></tr>`).join('')}</table></div><p class="mu" style="margin-top:10px">العمولة الجديدة تُطبَّق على الطلبات القادمة، وتظهر في تقارير المطعم.</p>`;
+ if(T==='zones')body=`<div class="h1" style="margin-bottom:14px">مناطق التوصيل والرسوم</div><div class="tblw"><table class="tbl"><tr><th>المنطقة</th><th>رسوم التوصيل (${CUR})</th><th>مفعّلة</th></tr>${G.zones.map(z=>`<tr><td>${esc(z.name)}</td><td><input class="inp num" value="${z.fee}" data-zfee="${z.id}" inputmode="decimal"></td><td><button class="switch ${z.active?'on':''}" data-zon="${z.id}"></button></td></tr>`).join('')}</table></div><p class="mu" style="margin-top:10px">المنطقة المعطّلة لا تظهر للعملاء عند الطلب.</p>`;
+ if(T==='coupons')body=`<div class="h1" style="margin-bottom:14px">الكوبونات</div><div class="tblw"><table class="tbl"><tr><th>الكود</th><th>الوصف</th><th>الاستخدام</th><th>مفعّل</th></tr>${G.coupons.map(c=>`<tr><td><b>${esc(c.code)}</b></td><td class="mu">${esc(c.label)} · حد أقصى ${fmt(c.max_off)} ${CUR}</td><td class="num">${c.used}</td><td><button class="switch ${c.active?'on':''}" data-con="${esc(c.code)}"></button></td></tr>`).join('')}</table></div>`;
+ return shell('منصتك','لوحة الإدارة',[['dash','نظرة عامة',0],['orders','الطلبات',live.length],['rests','المطاعم والعمولات',0],['zones','مناطق التوصيل',0],['coupons','الكوبونات',0]],T,'data-atab',body);
+}
+async function admClick(e){
+ const t=e.target.closest('button');if(!t)return;const d=t.dataset;
+ if(d.logout!==undefined){await sb.auth.signOut();return}
+ if(d.atab){ST.adminTab=d.atab;render();return}
+ if(d.zon){const z=G.zones.find(x=>x.id===+d.zon);const {error}=await sb.from('dl_zones').update({active:!z.active}).eq('id',z.id);if(error)toast(errMsg(error),1);else{z.active=!z.active;render()}return}
+ if(d.con){const c=G.coupons.find(x=>x.code===d.con);const {error}=await sb.from('dl_coupons').update({active:!c.active}).eq('code',c.code);if(error)toast(errMsg(error),1);else{c.active=!c.active;render()}return}
+}
+async function admChange(e){const d=e.target.dataset;const v=parseFloat(e.target.value);
+ if(d.comm){if(!(v>=0&&v<=50)){toast('العمولة بين 0 و 50٪',1);render();return}const {error}=await sb.from('dl_restaurants').update({commission:v}).eq('id',d.comm);if(error)toast(errMsg(error),1);else{rest(d.comm).commission=v;toast('تم تحديث العمولة')}}
+ if(d.zfee){if(!(v>=0&&v<=200)){toast('رسوم غير صالحة',1);render();return}const {error}=await sb.from('dl_zones').update({fee:v}).eq('id',+d.zfee);if(error)toast(errMsg(error),1);else{G.zones.find(z=>z.id===+d.zfee).fee=v;toast('تم تحديث الرسوم')}}}
+
+/* ================= SHELL ================= */
+function render(){
+ const app=document.getElementById('app');const rl=role();
+ const ae=document.activeElement;const fid=ae&&app.contains(ae)?ae.id:null;const fpos=fid&&ae.selectionStart!=null?ae.selectionStart:null;
+ if(ae&&ae.dataset&&(ae.dataset.dotp!==undefined||ae.classList.contains('inp'))&&app.contains(ae))return; // don't clobber typing
+ document.body.className=(rl==='customer'||rl==='driver')?'m':'';
+ const html=rl==='restaurant'?renderRestaurant():rl==='driver'?renderDriver():rl==='admin'?renderAdmin():renderCustomer();
+ const keep={};app.querySelectorAll('input[id]').forEach(i=>keep[i.id]=i.value);
+ app.innerHTML=html;
+ for(const id in keep){const el=document.getElementById(id);if(el&&!['q'].includes(id)&&el.type!=='password'&&!el.value)el.value=keep[id];if(el&&el.type==='password'&&keep[id])el.value=keep[id]}
+ if(fid){const el=document.getElementById(fid);if(el){el.focus();try{if(fpos!=null)el.setSelectionRange(fpos,fpos)}catch(e){}}}
+}
+const app=document.getElementById('app');
+app.addEventListener('click',e=>{const rl=role();(rl==='restaurant'?restClick:rl==='driver'?drvClick:rl==='admin'?admClick:custClick)(e)});
+app.addEventListener('change',e=>{const rl=role();
+ if(e.target.dataset.zone!==undefined){C.zone=+e.target.value;LS.set('zone',C.zone);render();return}
+ if(rl==='restaurant')restChange(e);else if(rl==='admin')admChange(e)});
+app.addEventListener('input',e=>{
+ if(e.target.id==='q'){C.q=e.target.value.trim();render()}
+ if(e.target.id==='caddr')C.addr=e.target.value;if(e.target.id==='dnote')C.note=e.target.value;if(e.target.id==='cpn')C.couponIn=e.target.value;
+ if(e.target.dataset.dotp!==undefined){e.target.value=e.target.value.replace(/\D/g,'');const n=document.querySelector(`[data-dotp="${+e.target.dataset.dotp+1}"]`);if(e.target.value&&n)n.focus()}
+});
+app.addEventListener('submit',e=>{if(e.target.id==='authf')authSubmit(e)});
+
+async function onSession(session){
+ G.session=session;ST.known=new Set();ST.first=true;
+ if(session){await loadProfile();await loadOrders();subscribe();
+  if(C.screen==='auth'){C.screen=C.after==='checkout'&&cartCount()?'checkout':'home';C.hist=C.after==='checkout'?['home','cart']:[];C.after=null}
+ } else {G.profile=null;G.orders=[];if(rtCh){sb.removeChannel(rtCh);rtCh=null}C.screen='home';C.hist=[];subscribe()}
+ render();
+}
+(async()=>{
+ try{await loadCatalog();G.loaded=true}catch(e){document.getElementById('app').innerHTML='<div class="empty"><div class="ic">📡</div>تعذّر الاتصال بالخادم<br><button class="btn p" style="margin:14px auto" onclick="location.reload()">أعد المحاولة</button></div>';return}
+ if(C.cart.rid&&!G.rests.some(r=>r.id===C.cart.rid))C.cart={rid:null,lines:[]};
+ const {data}=await sb.auth.getSession();await onSession(data.session);
+ sb.auth.onAuthStateChange((ev,s)=>{if(ev==='SIGNED_IN'&&G.session?.user.id===s?.user.id)return;if(ev==='TOKEN_REFRESHED'){G.session=s;return}if(ev==='SIGNED_IN'||ev==='SIGNED_OUT')setTimeout(()=>onSession(s),0)});
+})();
+</script>
+</body>
+</html>
