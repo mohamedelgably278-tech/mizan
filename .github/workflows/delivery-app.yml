@@ -32,11 +32,21 @@ jobs:
           sed -i 's#<string>Munassatak</string>#<string>منصتك</string>#' ios/Runner/Info.plist || true
       - run: flutter pub get
       - run: flutter analyze --no-fatal-infos --no-fatal-warnings
-      - run: flutter build apk --release
+      - name: Build customer app
+        run: |
+          flutter build apk --release -t lib/main.dart
+          cp build/app/outputs/flutter-apk/app-release.apk munassatak.apk
+      - name: Build driver app
+        run: |
+          G=$(ls android/app/build.gradle.kts android/app/build.gradle 2>/dev/null | head -1)
+          sed -i 's/app\.munassatak\.munassatak/app.munassatak.driver/' $G
+          grep -n applicationId $G
+          sed -i 's#android:label="[^"]*"#android:label="منصتك مندوب"#' android/app/src/main/AndroidManifest.xml
+          flutter build apk --release -t lib/main_driver.dart
+          cp build/app/outputs/flutter-apk/app-release.apk munassatak-driver.apk
       - name: Publish APK release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cp build/app/outputs/flutter-apk/app-release.apk munassatak.apk
           gh release delete delivery-app-latest --yes --cleanup-tag || true
-          gh release create delivery-app-latest munassatak.apk --title "منصتك — تطبيق العميل (أندرويد)" --notes "نسخة تجريبية تلقائية من آخر تحديث" --prerelease
+          gh release create delivery-app-latest munassatak.apk munassatak-driver.apk --title "منصتك — تطبيقات أندرويد" --notes "نسخة تجريبية تلقائية من آخر تحديث" --prerelease
