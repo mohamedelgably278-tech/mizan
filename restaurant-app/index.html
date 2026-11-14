@@ -261,6 +261,7 @@ function cHome(){
  C.rid=SINGLE;const r=rest(SINGLE);if(!G.loaded)return '<div class="skel"></div><div class="skel"></div>';
  const z=zoneSel();const active=myOrders().find(o=>!['delivered','rejected'].includes(o.status));
  let body=cRest().replace('<button class="back" data-back aria-label="رجوع">→</button>','').replace('<div class="stickyb">','<div class="stickyb" style="bottom:calc(64px + env(safe-area-inset-bottom))">').replace(/<div class="pad"><div class="row sb"><div class="h1">[^<]*<\/div>/,'<div class="pad"><div class="row sb"><div class="h1">'+esc(brandName())+'</div>');
+ if(BR.color)body=body.replace(/class="r-cover" style="background:[^"]*"/,'class="r-cover" style="background:linear-gradient(135deg,'+BR.color+'cc,'+BR.color+')"');
  document.title=brandName();
  return `<div class="c-head" style="border-radius:0;padding-bottom:12px"><div class="row sb"><div class="addr">التوصيل إلى<br><select data-zone>${G.zones.filter(x=>x.active).map(x=>`<option value="${x.id}" ${x.id===z.id?'selected':''}>${esc(x.name)} ▾</option>`).join('')}</select></div><b style="font-size:18px">${esc(brandName())}</b></div>${BR.tag?`<div style="font-size:13px;opacity:.9;margin-top:6px">${esc(BR.tag)}</div>`:''}</div>
  ${active?`<div class="card row sb" style="margin:14px 18px 0;padding:12px 14px;border-color:var(--o);cursor:pointer" data-open="${active.id}"><div><b style="color:var(--v)">طلبك #${active.id} — ${statusLabel(active.status)[0]}</b><div class="mu">اضغط للمتابعة</div></div><span class="badge b-o">تتبع</span></div>`:''}
