@@ -182,7 +182,7 @@ input,select{font:inherit}
 <div id="app"><div class="spin"></div></div>
 <script>
 const SB_URL='https://quicdsxjpxsoksvhwxcq.supabase.co',SB_KEY='sb_publishable_UwjFttlllFmnqbnWxYmkXw_2rpP0eFJ';
-const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'dl-auth'}});
+const sb=supabase.createClient(SB_URL,SB_KEY,{auth:{storageKey:'ra-auth'}});
 const CUR='ر.س';
 const QS=new URLSearchParams(location.search);
 const SINGLE=(QS.get('r')||'r1').replace(/[^a-z0-9_-]/gi,'');
@@ -196,7 +196,7 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const I=(n,sz)=>`<span class="ms"${sz?` style="font-size:${sz}px"`:''}>${n}</span>`;
 const foodR=(r,sz)=>r.image_url?`<img class="thimg" src="${esc(r.image_url)}" alt="">`:`<span class="ms food" style="font-size:${sz}px">${esc(r.icon||'restaurant')}</span>`;
 const foodM=(m,sz)=>m.image_url?`<img class="thimg" src="${esc(m.image_url)}" alt="">`:`<span class="ms" style="font-size:${sz}px">${esc(m.icon||'restaurant')}</span>`;
-const LS={get(k,d){try{const v=localStorage.getItem('dl_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('dl_'+k,JSON.stringify(v))}catch(e){}}};
+const LS={get(k,d){try{const v=localStorage.getItem('ra_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('ra_'+k,JSON.stringify(v))}catch(e){}}};
 
 /* ---------- global state ---------- */
 const G={session:null,profile:null,rests:[],menu:[],zones:[],orders:[],coupons:[],loaded:false,stats:{trips:0,earn:0}};
