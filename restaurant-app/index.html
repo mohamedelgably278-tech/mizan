@@ -264,6 +264,8 @@ html,body{overflow-x:hidden}
 @keyframes bump{30%{transform:scale(1.45) rotate(-8deg)}60%{transform:scale(.9)}}
 .cfab b{flex:1;font-weight:900;text-align:right}
 .noanim,.noanim .sheet{animation:none!important}
+.cthumb{width:64px;height:64px;border-radius:16px;object-fit:cover;flex:none;box-shadow:0 4px 12px rgba(27,16,18,.12)}
+.cline b{font-weight:900;color:var(--ink2)}
 .cfab .tot{font-weight:900;color:var(--y2)}
 .flyimg{position:fixed;z-index:99;border-radius:16px;object-fit:cover;pointer-events:none;box-shadow:0 10px 24px rgba(0,0,0,.3)}
 .credit{text-align:center;font-size:11px;color:var(--mu);padding:20px 0 120px}
@@ -355,7 +357,7 @@ const ic={home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strok
 const cartCount=()=>C.cart.lines.reduce((a,l)=>a+l.q,0);
 const cartSub=()=>C.cart.lines.reduce((a,l)=>a+l.q*l.unit,0);
 const disc=()=>C.coupon?Math.min(C.coupon.max_off,cartSub()*C.coupon.pct/100):0;
-function go(s){C.hist.push(C.screen);C.screen=s;render();scrollTo(0,0)}
+function go(s){C.hist.push(C.screen);C.screen=s;render();scrollTo({top:0,behavior:'instant'})}
 function back(){C.screen=C.hist.pop()||'home';render()}
 const myOrders=()=>G.orders.filter(o=>o.customer_id===G.session?.user.id&&o.restaurant_id===SINGLE);
 const curOrder=()=>G.orders.find(o=>o.id===C.orderId);
@@ -432,7 +434,7 @@ function cCart(){
  if(!cartCount())return `<div class="pad row"><button class="back" data-back>→</button><div class="h1">السلة</div></div><div class="empty"><div class="ic">${I("shopping_bag")}</div>سلتك فارغة<br><button class="btn p" style="margin:16px auto 0" data-home>تصفح المطاعم</button></div>`;
  const r=rest(C.cart.rid),sub=cartSub(),d=disc(),fee=+zoneSel().fee,tot=sub+fee-d,short=r.min_order-sub;
  return `<div class="pad row"><button class="back" data-back>→</button><div><div class="h1">سلتك</div><div class="mu">${esc(r.name)}</div></div></div>
- <div class="pad" style="padding-top:0">${C.cart.lines.map((l,i)=>`<div class="row sb" style="padding:12px 0;border-bottom:1px solid var(--ln)"><div style="flex:1"><b>${esc(l.name)}</b>${l.extra?`<div class="mu">${esc(l.extra)}</div>`:''}<div class="num" style="font-weight:800;color:var(--v);margin-top:2px">${fmt(l.unit*l.q)} ${CUR}</div></div><div class="stepper"><button data-cq="${i}" data-d="1">+</button><b class="num">${l.q}</b><button data-cq="${i}" data-d="-1">${l.q===1?I('delete',18):'−'}</button></div></div>`).join('')}
+ <div class="pad" style="padding-top:0">${C.cart.lines.map((l,i)=>`<div class="row sb cline" style="padding:12px 0;border-bottom:1px solid var(--ln)">${(()=>{const mm=G.menu.find(x=>x.id===l.item_id);return mm&&mm.image_url?`<img class="cthumb" src="${esc(mm.image_url)}" alt="">`:''})()}<div style="flex:1"><b>${esc(l.name)}</b>${l.extra?`<div class="mu">${esc(l.extra)}</div>`:''}<div class="num" style="font-weight:800;color:var(--v);margin-top:2px">${fmt(l.unit*l.q)} ${CUR}</div></div><div class="stepper"><button data-cq="${i}" data-d="1">+</button><b class="num">${l.q}</b><button data-cq="${i}" data-d="-1">${l.q===1?I('delete',18):'−'}</button></div></div>`).join('')}
  <button style="color:var(--o);font-weight:800;padding:12px 0" data-rest="${r.id}">+ أضف أصنافًا أخرى</button>
  <div class="row" style="margin-top:4px"><div class="field" style="flex:1;padding:7px 12px"><input id="cpn" placeholder="كوبون الخصم (جرّب: اهلا)" value="${esc(C.couponIn)}"></div><button class="btn s" style="padding:10px 16px" data-coupon>تطبيق</button></div>
  ${C.couponErr?`<div class="err">${C.couponErr}</div>`:''}${C.coupon?`<div class="ok">✓ ${esc(C.coupon.label)}</div>`:''}
