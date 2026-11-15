@@ -180,7 +180,8 @@ input,select{font:inherit}
 /* ===== BRAND MVP THEME ===== */
 :root{--o:#E3121B;--y2:#FFC529;--cream:#FFF7EC;--ink2:#1B1012}
 body.m{background:#1B1012}
-body.m .mob{background:var(--cream)}
+body.m .mob{background:var(--cream);min-height:100vh;min-height:100dvh;overflow-x:clip}
+html,body{overflow-x:hidden}
 .bhero{position:relative;height:520px;overflow:hidden;color:#fff;background:#120a0b}
 .bhero .bimg{position:absolute;inset:-40px 0 0;background:var(--img) center/cover no-repeat;transform:translateY(calc(var(--sy,0px)*.35)) scale(1.08);transform-origin:left center;animation:kb 14s ease-in-out infinite alternate}
 @keyframes kb{to{transform:translateY(calc(var(--sy,0px)*.35)) scale(1.18)}}
@@ -220,7 +221,7 @@ body.m .mob{background:var(--cream)}
 .ofc{flex:none;width:84%;height:190px;border-radius:24px;overflow:hidden;position:relative;scroll-snap-align:center;cursor:pointer;color:#fff;box-shadow:0 12px 26px rgba(27,16,18,.18);transition:transform .2s}
 .ofc:active{transform:scale(.97)}
 .ofc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform .6s}
-.ofc:hover img{transform:scale(1.06)}
+@media(hover:hover){.ofc:hover img{transform:scale(1.06)}}
 .ofc:after{content:"";position:absolute;inset:0;background:linear-gradient(270deg,rgba(200,16,46,.95) 0%,rgba(200,16,46,.6) 45%,transparent 75%)}
 .ofc.y:after{background:linear-gradient(270deg,rgba(255,197,41,.97) 0%,rgba(255,197,41,.7) 45%,transparent 78%)}
 .ofc.y{color:var(--ink2)}
@@ -242,7 +243,7 @@ body.m .mob{background:var(--cream)}
 .mcard:active{transform:scale(.97)}
 .mcard .mimg{height:128px;position:relative;overflow:hidden;background:#2a1a1c}
 .mcard .mimg img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
-.mcard:hover .mimg img{transform:scale(1.08)}
+@media(hover:hover){.mcard:hover .mimg img{transform:scale(1.08)}}
 .mcard .price{position:absolute;bottom:8px;right:8px;background:var(--y2);color:var(--ink2);font-weight:900;font-size:15px;padding:2px 10px;border-radius:10px;transform:rotate(-4deg);box-shadow:0 4px 10px rgba(0,0,0,.2)}
 .mcard .price small{font-size:10px}
 .mcard .hot{position:absolute;top:8px;right:8px;background:var(--o);color:#fff;font-size:10px;font-weight:900;padding:2px 8px;border-radius:999px}
@@ -261,7 +262,8 @@ body.m .mob{background:var(--cream)}
 .cfab .cnt{background:var(--y2);color:var(--ink2);font-weight:900;border-radius:12px;min-width:34px;height:34px;display:grid;place-items:center}
 .cfab.bump .cnt{animation:bump .5s}
 @keyframes bump{30%{transform:scale(1.45) rotate(-8deg)}60%{transform:scale(.9)}}
-.cfab b{flex:1;font-weight:900}
+.cfab b{flex:1;font-weight:900;text-align:right}
+.noanim,.noanim .sheet{animation:none!important}
 .cfab .tot{font-weight:900;color:var(--y2)}
 .flyimg{position:fixed;z-index:99;border-radius:16px;object-fit:cover;pointer-events:none;box-shadow:0 10px 24px rgba(0,0,0,.3)}
 .credit{text-align:center;font-size:11px;color:var(--mu);padding:20px 0 120px}
@@ -333,12 +335,14 @@ async function loadProfile(){
 let rtCh=null,dbt=null;
 function subscribe(){
  if(rtCh)sb.removeChannel(rtCh);
- rtCh=sb.channel('dl-live').on('postgres_changes',{event:'*',schema:'public',table:'dl_orders'},()=>{clearTimeout(dbt);dbt=setTimeout(async()=>{await loadOrders();render()},250)})
+ rtCh=sb.channel('dl-live').on('postgres_changes',{event:'*',schema:'public',table:'dl_orders'},()=>{clearTimeout(dbt);dbt=setTimeout(async()=>{await loadOrders();renderIfChanged()},250)})
   .on('postgres_changes',{event:'*',schema:'public',table:'dl_restaurants'},()=>refreshCat())
   .on('postgres_changes',{event:'*',schema:'public',table:'dl_menu_items'},()=>refreshCat()).subscribe();
 }
 let cdbt;function refreshCat(){clearTimeout(cdbt);cdbt=setTimeout(async()=>{try{await loadCatalog();render()}catch(e){}},300)}
-setInterval(async()=>{if(G.session&&document.visibilityState==='visible'){await loadOrders();render()}},20000);
+let lastSig='';const sig=()=>JSON.stringify(G.orders.map(o=>[o.id,o.status,o.driver_id,o.driver_stage,o.rating_food]))+'|'+(G.profile?.wallet??'');
+function renderIfChanged(){const s2=sig();if(s2!==lastSig){lastSig=s2;render()}}
+setInterval(async()=>{if(G.session&&document.visibilityState==='visible'){await loadOrders();renderIfChanged()}},20000);
 let actx;function beep(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();[0,.18].forEach(t=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.18,actx.currentTime+t);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+t+.15);o.start(actx.currentTime+t);o.stop(actx.currentTime+t+.16)})}catch(e){}}
 
 /* ---------- icons ---------- */
@@ -381,7 +385,7 @@ function cHome(){
  <nav class="btabs" id="btabs">${secs.map((s,i)=>`<button class="${(C.sec||secs[0])===s?'on':''}" data-sec="${esc(s)}">${esc(s)}</button>`).join('')}</nav>
  ${secs.map(s=>`<section class="msec" data-secname="${esc(s)}"><h3 class="sect">${esc(s)}</h3><div class="mgrid">${items.filter(m=>m.section===s).map(card).join('')}</div></section>`).join('')}
  <div class="credit"></div>
- ${cartCount()&&C.cart.rid===SINGLE?`<div class="cfab ${C.bump?'bump':''}" data-go="cart"><span class="cnt">${cartCount()}</span><b>عرض السلة</b><span class="tot num">${fmt(cartSub())} ${CUR}</span></div>`:''}`;
+ ${cartCount()&&C.cart.rid===SINGLE?`<button class="cfab ${C.bump?'bump':''} ${C.fabShown?'noanim':''}" data-go="cart" aria-label="عرض السلة"><span class="cnt">${cartCount()}</span><b>عرض السلة</b><span class="tot num">${fmt(cartSub())} ${CUR}</span></button>`:''}`;
 }
 function cHomeMarket(){
  const cats=['الكل',...new Set(G.rests.map(r=>r.cat))];
@@ -413,7 +417,7 @@ function cRest(){
 function unitOf(m,sh){if(!m.options)return +m.price;return +m.price+(sh.size==null?0:+m.options.size[sh.size][1])+sh.add.reduce((a,i)=>a+ +m.options.add[i][1],0)}
 function cSheet(){
  const m=G.menu.find(x=>x.id===C.sheet.mid),sh=C.sheet,o=m.options;
- return `<div class="sheet-bg" data-close-sheet><div class="sheet">
+ return `<div class="sheet-bg ${C.sheetOpened?'noanim':''}" data-close-sheet><div class="sheet">
  ${m.image_url?`<div class="bsimg"><img src="${esc(m.image_url)}" alt=""></div>`:`<div style="height:150px;background:var(--bg);display:grid;place-items:center">${foodM(m,80)}</div>`}
  <div class="pad"><div class="row sb"><div class="h1">${esc(m.name)}</div><b class="num" style="color:var(--v)">${fmt(m.price)} ${CUR}</b></div><div class="mu">${esc(m.descr)}</div>
  ${o?`<div style="margin-top:14px" class="row sb"><b style="color:var(--v)">الحجم</b><span class="badge ${sh.size==null?'b-r':'b-g'}">إجباري</span></div>
@@ -529,11 +533,15 @@ function reveal(){
  rvObs=rvObs||new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');SEEN.add(en.target.dataset.rv);rvObs.unobserve(en.target)}}),{threshold:.12});
  document.querySelectorAll('.rv').forEach(e=>{if(SEEN.has(e.dataset.rv))e.classList.add('seen');else rvObs.observe(e)});
 }
-addEventListener('scroll',()=>{const h=document.querySelector('.bhero');if(h&&scrollY<700)h.style.setProperty('--sy',scrollY+'px');
- const secs=[...document.querySelectorAll('.msec')];if(!secs.length)return;let cur=secs[0].dataset.secname;
- for(const s of secs){if(s.getBoundingClientRect().top<120)cur=s.dataset.secname}
- if(cur!==C.sec){C.sec=cur;document.querySelectorAll('#btabs button').forEach(b=>{const on=b.dataset.sec===cur;b.classList.toggle('on',on);if(on)b.scrollIntoView({inline:'center',block:'nearest'})})}
-},{passive:true});
+let spyRaf=0;
+addEventListener('scroll',()=>{if(spyRaf)return;spyRaf=requestAnimationFrame(()=>{spyRaf=0;
+ const h=document.querySelector('.bhero');if(h&&scrollY<700)h.style.setProperty('--sy',scrollY+'px');
+ const secs=document.querySelectorAll('.msec');if(!secs.length)return;let cur=secs[0].dataset.secname;
+ for(const x of secs){if(x.getBoundingClientRect().top<130)cur=x.dataset.secname}
+ if(cur===C.sec)return;C.sec=cur;const bar=document.getElementById('btabs');if(!bar)return;
+ bar.querySelectorAll('button').forEach(b=>{const on=b.dataset.sec===cur;b.classList.toggle('on',on);
+  if(on){const br=bar.getBoundingClientRect(),bb=b.getBoundingClientRect();bar.scrollBy({left:(bb.left+bb.width/2)-(br.left+br.width/2),behavior:'smooth'})}});
+})},{passive:true});
 function addLine(m,size,add,q,note){
  if(C.cart.rid&&C.cart.rid!==m.restaurant_id&&C.cart.lines.length){C.cart={rid:null,lines:[]};C.coupon=null;toast('بدأنا سلة جديدة من '+rest(m.restaurant_id).name)}
  C.cart.rid=m.restaurant_id;
@@ -544,7 +552,7 @@ function addLine(m,size,add,q,note){
  saveCart();
 }
 async function custClick(e){
- const t=e.target.closest('[data-quick],[data-close-sheet],button,[data-rest],[data-item],[data-size],[data-add],[data-pay],[data-open]');if(!t)return;const d=t.dataset;
+ const t=e.target.closest('[data-quick],[data-close-sheet],button,[data-go],[data-rest],[data-item],[data-size],[data-add],[data-pay],[data-open]');if(!t)return;const d=t.dataset;
  if(d.closeSheet!==undefined){if(e.target===t){C.sheet=null;render()}return}
  if(d.tab){C.hist=[];C.screen=d.tab;render();return}
  if(d.cat){C.cat=d.cat;render();return}
@@ -555,7 +563,7 @@ async function custClick(e){
  if(d.login!==undefined){C.after=null;go('auth');return}
  if(d.scrollmenu!==undefined){const b=document.getElementById('btabs');if(b)scrollTo({top:b.getBoundingClientRect().top+scrollY-4,behavior:'smooth'});return}
  if(d.go){go(d.go);return}
- if(d.sec){C.sec=d.sec;render();const tgt=document.querySelector(`[data-secname="${CSS.escape(d.sec)}"]`);if(tgt)scrollTo({top:tgt.getBoundingClientRect().top+scrollY-60,behavior:'smooth'});return}
+ if(d.sec){C.sec=null;const tgt=document.querySelector(`[data-secname="${CSS.escape(d.sec)}"]`);if(tgt)scrollTo({top:tgt.getBoundingClientRect().top+scrollY-60,behavior:'smooth'});return}
  if(d.quick){const m=G.menu.find(x=>x.id===d.quick);if(m.options){C.sheet={mid:m.id,size:null,add:[],q:1,note:''};render();return}const src=t.closest('.mcard')?.querySelector('img');const rect=src?.getBoundingClientRect();addLine(m,0,[],1,'');C.bump=true;render();fly(src,rect);setTimeout(()=>{C.bump=false},600);return}
  if(d.item){if(!rest(C.rid).open){toast('المطعم مغلق الآن');return}const m=G.menu.find(x=>x.id===d.item);C.sheet={mid:m.id,size:m.options?null:0,add:[],q:1,note:''};render();return}
  if(d.size){C.sheet.size=+d.size;render();return}
@@ -722,6 +730,8 @@ function render(){
  const html=rl==='restaurant'?renderRestaurant():rl==='driver'?renderDriver():rl==='admin'?renderAdmin():renderCustomer();
  const keep={};app.querySelectorAll('input[id]').forEach(i=>keep[i.id]=i.value);
  app.innerHTML=html;
+ if(C.sheet)C.sheetOpened=true;else C.sheetOpened=false;
+ C.fabShown=!!document.querySelector('.cfab');
  requestAnimationFrame(reveal);
  if(!window._calmT&&document.querySelector('.bhero'))window._calmT=setTimeout(()=>document.documentElement.classList.add('calm'),1600);
  for(const id in keep){const el=document.getElementById(id);if(el&&!['q'].includes(id)&&el.type!=='password'&&!el.value)el.value=keep[id];if(el&&el.type==='password'&&keep[id])el.value=keep[id]}
